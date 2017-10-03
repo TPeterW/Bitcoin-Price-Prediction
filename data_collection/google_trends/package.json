@@ -1,0 +1,16 @@
+{
+  "name": "google_trends",
+  "version": "1.0.0",
+  "description": "Fetching Google Trends data from the website",
+  "main": "get_trends.js",
+  "dependencies": {
+    "csv-write-stream": "^2.0.0",
+    "google-trends-api": "^4.2.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Tao Peter Wang",
+  "license": "MIT"
+}
