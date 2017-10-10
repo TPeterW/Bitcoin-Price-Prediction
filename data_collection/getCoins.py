@@ -2,7 +2,7 @@ from selenium import webdriver
 import csv
 
 def write_to_csv(coin_data,coin_name,header):
-    with open("historical data/" + coin_name +'.csv','w') as csvfile:
+    with open("coin_historical data/" + coin_name +'.csv','w') as csvfile:
         csv_writer = csv.writer(csvfile)
         csv_writer.writerow(header)
         for row in coin_data[coin_name]:
