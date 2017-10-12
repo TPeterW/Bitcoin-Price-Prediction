@@ -1,8 +1,8 @@
-.DS_Store
-
 # Project files
 data/
 .idea/
+.DS_Store
+*.csv
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
