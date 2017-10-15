@@ -12,7 +12,6 @@ def main():
 	if len(sys.argv) < 2:
 		print('Usage: ./extract_features.py datafile.csv')
 		exit(1)
-	
 	filename = sys.argv[1]
 
 	raw_price_data = pd.DataFrame.from_csv(filename, index_col=None, header=0)
