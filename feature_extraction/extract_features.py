@@ -25,25 +25,28 @@ def main():
 	features.to_csv('features_extracted.csv', sep=',', index=False, header=True)
 	labels.to_csv('labels.csv', sep=',', index=False, header=False)
 
-def convert(raw_price_data):
+def convert(raw_price_data, percentage=False):
 	percent_price_data = pd.DataFrame(index=range(len(raw_price_data)), columns=raw_price_data.columns, dtype=float)
 
-	# convert to fluctuation percentage
-	prev = raw_price_data.loc[0]
-	for index, row in raw_price_data.iterrows():
-		percent_price_data.loc[index]['Open'] = row['Open'] / prev['Open']
-		percent_price_data.loc[index]['High'] = row['High'] / prev['High']
-		percent_price_data.loc[index]['Low'] = row['Low'] / prev['Low']
-		percent_price_data.loc[index]['Close'] = row['Close'] / prev['Close']
+	if percentage:
+		# convert to fluctuation percentage
+		prev = raw_price_data.loc[0]
+		for index, row in raw_price_data.iterrows():
+			percent_price_data.loc[index]['Open'] = row['Open'] / prev['Open']
+			percent_price_data.loc[index]['High'] = row['High'] / prev['High']
+			percent_price_data.loc[index]['Low'] = row['Low'] / prev['Low']
+			percent_price_data.loc[index]['Close'] = row['Close'] / prev['Close']
 
-		prev = raw_price_data.loc[index]
-
-	labels = percent_price_data['Close'][30:]
+			prev = raw_price_data.loc[index]
+		price_data = raw_price_data
+	else:
+		labels = raw_price_data['Close'][30:]
+		price_data = raw_price_data
 
 	raw = []
 	for i in range(30, len(percent_price_data)):
 		for j in range(30):
-			row = percent_price_data.loc[i - 30 + j].tolist()
+			row = price_data.loc[i - 30 + j].tolist()
 			raw.append([i - 30, j, row[0], row[1], row[2], row[3]])
 
 	timeseries = pd.DataFrame(raw, index=None, columns=['id', 'time', 'Open', 'High', 'Low', 'Close'])
