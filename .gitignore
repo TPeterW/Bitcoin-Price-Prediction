@@ -1,9 +1,8 @@
-.DS_Store
-
 # Project files
 coin_historical data/
 data/
 .idea/
+.DS_Store
 *.csv
 
 # Byte-compiled / optimized / DLL files
