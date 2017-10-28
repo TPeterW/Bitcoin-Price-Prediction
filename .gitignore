@@ -3,6 +3,7 @@ coin_historical data/
 data/
 .idea/
 .DS_Store
+*.DS_Store
 *.csv
 
 # Byte-compiled / optimized / DLL files
