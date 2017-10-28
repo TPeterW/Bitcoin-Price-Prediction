@@ -33,6 +33,10 @@ def convert(raw_price_data, percentage=False):
 
 	labels = price_data['btc-ohlc-coindesk-Close'][30:]
 
+	for col in price_data.columns:
+		if 'high' in col.lower() or 'low' in col.lower() or 'open' in col.lower():
+			price_data.drop(col, axis=1, inplace=True)
+
 	raw = []
 	for i in range(30, len(price_data)):
 		for j in range(30):

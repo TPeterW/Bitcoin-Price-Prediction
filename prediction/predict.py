@@ -14,7 +14,7 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, confu
 
 def main():
 	if len(sys.argv) < 3:
-		print('Usage: ./test_logistic.py features labels')
+		print('Usage: ./predict.py features labels')
 		exit(1)
 	
 	features = pd.DataFrame.from_csv(sys.argv[1], index_col=None, header=0)
