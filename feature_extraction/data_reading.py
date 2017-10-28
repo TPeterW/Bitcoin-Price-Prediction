@@ -19,7 +19,7 @@ def main():
         output_name = sys.argv[1]
 
     # just for testing on my own computer, for now: use ^^^ normally
-    filepath = "/Users/HenrySwaffield/Documents/Middlebury Senior Year/fall/Senior Seminar/project/raw_data/"
+    filepath = "/Users/HenrySwaffield/Documents/Middlebury Senior Year/fall/Senior Seminar/project/data/raw_data/"
     # filepath will change... provide th appropriate path for your system ... this could synchonize with google docs.
 
     filenames = [filepath + "btc-ohlc-coindesk.csv", filepath + "n-daily-btc-transactions.csv", filepath + "num-btc-transactions-per-block.csv", filepath + "btc-estimated-transaction-volume-blockchain-in-usd.csv"]
