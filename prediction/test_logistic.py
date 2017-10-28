@@ -46,7 +46,7 @@ def main():
 
 	cnf_matrix = confusion_matrix(labels_test, predictions, [0, 1])
 	plt.figure()
-	plot_confusion_matrix(cnf_matrix, normalize=True, classes=[0, 1], title='Confusion matrix, without normalization')
+	plot_confusion_matrix(cnf_matrix, normalize=True, classes=[0, 1], title='Nomalized Confusion Matrix')
 	plt.show()
 
 def plot_confusion_matrix(cm, classes,
