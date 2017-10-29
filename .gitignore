@@ -1,5 +1,6 @@
 # Project files
 coin_historical data/
+extracted/
 data/
 .idea/
 .DS_Store
