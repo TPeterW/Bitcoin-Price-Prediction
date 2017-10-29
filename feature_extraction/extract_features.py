@@ -7,6 +7,8 @@ import pandas as pd
 from tsfresh import extract_features
 from tsfresh.utilities.dataframe_functions import impute
 
+days_before = 30
+
 def main():
 	if len(sys.argv) < 2:
 		print('Usage: ./extract_features.py datafile.csv')
@@ -25,12 +27,21 @@ def main():
 	features.to_csv('features_extracted.csv', sep=',', index=False, header=True)
 	labels.to_csv('labels.csv', sep=',', index=False, header=False)
 
-	print(features)
+	print('Done!')
 
 def convert(raw_price_data, percentage=False):
 	price_data = raw_price_data.astype(float)
 
-	labels = price_data['btc-ohlc-coindesk-Close'][30:]
+	labels = price_data['btc-ohlc-coindesk-Close'][days_before - 1:]
+	labels.reset_index(drop=True, inplace=True)
+
+	for i in range(len(labels) - 1, 0, -1):
+		if labels[i] > labels[i - 1]:
+			labels[i] = 1
+		else:
+			labels[i] = 0
+	
+	labels = labels[1:].reset_index(drop=True)
 
 	for col in price_data.columns:
 		if 'high' in col.lower() or 'low' in col.lower() or 'open' in col.lower():

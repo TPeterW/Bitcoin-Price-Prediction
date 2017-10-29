@@ -10,8 +10,7 @@ import matplotlib.pyplot as plt
 
 from tsfresh import select_features
 
-from sklearn.feature_selection import RFE
-from sklearn.linear_model import LinearRegression, LogisticRegression, Lasso
+from sklearn.linear_model import LinearRegression, LogisticRegression
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import accuracy_score, precision_score, recall_score, confusion_matrix
 
@@ -20,13 +19,10 @@ def main():
 		print('Usage: ./predict.py features labels')
 		exit(1)
 	
-	features = pd.read_csv(sys.argv[1], index_col=None, header=None)
+	features = pd.read_csv(sys.argv[1], index_col=None, header=0)
 	labels = pd.read_csv(sys.argv[2], index_col=None, header=None, squeeze=True)
 
 	# features = select_features(features, labels)
-
-	# best_features = rfe(features, labels, 30)
-	# features[best_features].to_csv('features_rfe.csv', index=False, header=True)
 
 	cutoff = 1100
 
@@ -39,7 +35,7 @@ def main():
 	for i in range(cutoff, len(labels)):
 		labels_test.append(1 if labels.loc[i] > labels.loc[i - 1] else 0)
 
-	lr = LinearRegression(copy_X=True, normalize=False)
+	lr = LogisticRegression(C=1e5)
 	lr.fit(features_train, labels_train)
 
 	predictions = lr.predict(features_test).tolist()
@@ -49,25 +45,14 @@ def main():
 	for i, val in enumerate(predictions):
 		predictions[i] = 1 if val > actual_prices[i] else 0
 
-	print(accuracy_score(labels_test, predictions))
-	print(precision_score(labels_test, predictions))
-	print(recall_score(labels_test, predictions))
+	print('Accuracy: %s' % accuracy_score(labels_test, predictions))
+	print('Precision: %s' % precision_score(labels_test, predictions))
+	print('Recall: %s' % recall_score(labels_test, predictions))
 
 	cnf_matrix = confusion_matrix(labels_test, predictions, [0, 1])
 	plt.figure()
 	plot_confusion_matrix(cnf_matrix, normalize=True, classes=[0, 1], title='Nomalized Confusion Matrix')
 	plt.show()
-
-def rfe(features, labels, num_features):
-	estimator = Lasso(alpha=0.1)
-	selector = RFE(estimator, num_features, step=1000, verbose=10)
-	selector = selector.fit(features, labels)
-
-	ranking = np.array(selector.ranking_)
-	best_feature_index = np.where(ranking == 1)
-	best_features = features.columns[best_feature_index]
-	
-	return best_features
 
 def plot_confusion_matrix(cm, classes,
 						  normalize=False,
