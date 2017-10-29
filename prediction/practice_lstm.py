@@ -14,7 +14,7 @@ from keras.layers import LSTM
 def main():
     print('hi')
 
-    size = 1300
+    size = 1350
     filename = "/Users/HenrySwaffield/Documents/Middlebury Senior Year/fall/Senior Seminar/project/data/raw_data/btc-ohlc-coindesk.csv"
     file_data = pd.read_csv(filename, index_col=None, header=0, nrows=size)
 
@@ -59,11 +59,15 @@ def main():
     print(y_train)
 
     # print(file_data)
-    
 
-    model.fit(x_train, y_train, batch_size=16, epochs=10)
+    split = int(size *.6)
+    x_train_set = x_train[:split]
+    y_train_set = y_train[:split]
+    print(x_train_set)
+
+    model.fit(x_train_set, y_train_set, batch_size=16, epochs=10)
     # give the right test set here... labels might be off...
-    score = model.evaluate(x_train, y_train, batch_size=16)
+    score = model.evaluate(x_train[split:], y_train[split:], batch_size=16)
     print(score)
 
 if __name__ == '__main__':
