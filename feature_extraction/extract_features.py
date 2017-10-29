@@ -5,7 +5,6 @@ import sys
 import pandas as pd
 
 from tsfresh import extract_features
-from tsfresh import select_features
 from tsfresh.utilities.dataframe_functions import impute
 
 def main():
