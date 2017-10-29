@@ -2,6 +2,7 @@
 coin_historical data/
 extracted/
 data/
+.vscode/
 .idea/
 .DS_Store
 *.DS_Store

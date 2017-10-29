@@ -10,7 +10,9 @@ import matplotlib.pyplot as plt
 
 from tsfresh import select_features
 
-from sklearn.linear_model import LinearRegression, LogisticRegression
+from sklearn.svm import SVC
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.linear_model import LinearRegression, LogisticRegression, Lasso
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import accuracy_score, precision_score, recall_score, confusion_matrix
 
@@ -22,28 +24,34 @@ def main():
 	features = pd.read_csv(sys.argv[1], index_col=None, header=0)
 	labels = pd.read_csv(sys.argv[2], index_col=None, header=None, squeeze=True)
 
-	# features = select_features(features, labels)
+	predict(features, labels, 0.9)
 
-	cutoff = 1100
+def predict(features, labels, cutoff):
+	cutoff = int(len(features) * cutoff)
 
 	features_train = features.loc[:cutoff]
 	labels_train = labels.loc[:cutoff]
-	features_test = features.loc[cutoff:]
+	features_test = features.loc[cutoff:].reset_index(drop=True)
+	labels_test = labels.loc[cutoff:].reset_index(drop=True)
 
 	# labels_test = labels.loc[1300:]
-	labels_test = []
-	for i in range(cutoff, len(labels)):
-		labels_test.append(1 if labels.loc[i] > labels.loc[i - 1] else 0)
+	# labels_test = []
+	# for i in range(cutoff, len(labels)):
+	# 	labels_test.append(1 if labels.loc[i] > labels.loc[i - 1] else 0)
 
-	lr = LogisticRegression(C=1e5)
+	# lr = LogisticRegression(C=1e5)
+	lr = Lasso(alpha=1e5)
 	lr.fit(features_train, labels_train)
 
-	predictions = lr.predict(features_test).tolist()
-	# score = lr.score(features_test, labels_test)
+	predictions = lr.predict(features_test)
+	score = lr.score(features_test, labels_test)
 	
-	actual_prices = labels[cutoff - 1:-1].tolist()
-	for i, val in enumerate(predictions):
-		predictions[i] = 1 if val > actual_prices[i] else 0
+	# actual_prices = labels[cutoff - 1:-1].tolist()
+	# for i, val in enumerate(predictions):
+	# 	predictions[i] = 1 if val > actual_prices[i] else 0
+
+	print(labels_test)
+	return
 
 	print('Accuracy: %s' % accuracy_score(labels_test, predictions))
 	print('Precision: %s' % precision_score(labels_test, predictions))

@@ -7,7 +7,7 @@ import pandas as pd
 from tsfresh import extract_features
 from tsfresh.utilities.dataframe_functions import impute
 
-days_before = 30
+days_before = 15
 
 def main():
 	if len(sys.argv) < 2:

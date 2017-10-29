@@ -21,6 +21,9 @@ def main():
 
 	num_features = int(sys.argv[3])
 
+	features.to_csv('features_selected.csv', index=False, header=True)
+	return
+
 	best_features = rfe(features, labels, num_features)
 	features[best_features].to_csv('features_rfe.csv', index=False, header=True)
 
