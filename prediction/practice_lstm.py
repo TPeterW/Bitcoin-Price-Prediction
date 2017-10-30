@@ -16,6 +16,9 @@ def main():
 
     size = 1350
     split = int(size * .6)
+
+    offset = 2
+
     filename = "/Users/HenrySwaffield/Documents/Middlebury Senior Year/fall/Senior Seminar/project/data/raw_data/btc-ohlc-coindesk.csv"
     file_data = pd.read_csv(filename, index_col=None, header=0, nrows=size)
     file_data = file_data[file_data.columns[1:]]
@@ -25,9 +28,15 @@ def main():
 
     x_train = matrix[:,0]
 
+    # offsets:
+
+    x_train = x_train[:size - offset]
+
     # print(x_train)
 
     y_train = matrix[:,3]
+
+    y_train = y_train[offset : ]
 
     # print(y_train)
 
@@ -73,15 +82,15 @@ def main():
 
 
     # trying offsets...
-    offset = 2
+
     x_train_set = non_labels[:split-offset]
-    y_train_set = y_train[offset:split]
+    y_train_set = y_train[0:split - offset]
     print(x_train_set)
     print(y_train_set)
 
-    model.fit(x_train_set, y_train_set, batch_size=10, epochs=20)
+    model.fit(x_train_set, y_train_set, batch_size=10, epochs=10)
     # give the right test set here... labels might be off...
-    score = model.evaluate(matrix[split:], y_train[split:], batch_size=16)
+    score = model.evaluate(non_labels[split:size-offset], y_train[split:], batch_size=2)
     print(score)
 
 if __name__ == '__main__':
