@@ -25,15 +25,15 @@ def main():
 
     x_train = matrix[:,0]
 
-    print(x_train)
+    # print(x_train)
 
     y_train = matrix[:,3]
 
-    print(y_train)
+    # print(y_train)
 
     y_train = y_train > x_train
 
-    print(y_train)
+    # print(y_train)
 
     non_labels = matrix[:, :3]
 
@@ -67,18 +67,19 @@ def main():
     # np.delete(x_train, 0, 0)
 
     # print(x_train)
-    print(y_train)
+    # print(y_train)
 
     # print(file_data)
 
 
-
-
-    x_train_set = non_labels[:split]
-    y_train_set = y_train[:split]
+    # trying offsets...
+    offset = 2
+    x_train_set = non_labels[:split-offset]
+    y_train_set = y_train[offset:split]
     print(x_train_set)
+    print(y_train_set)
 
-    model.fit(x_train_set, y_train_set, batch_size=10, epochs=10)
+    model.fit(x_train_set, y_train_set, batch_size=10, epochs=20)
     # give the right test set here... labels might be off...
     score = model.evaluate(matrix[split:], y_train[split:], batch_size=16)
     print(score)
