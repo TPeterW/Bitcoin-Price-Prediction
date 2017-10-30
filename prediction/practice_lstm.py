@@ -62,7 +62,7 @@ def main():
     # model.add(LSTM(1, input_shape=input_shape, return_sequences=False))
     model.add(LSTM(128))
 
-    model.add(Dropout(0.1))
+    model.add(Dropout(0.5))
     model.add(Dense(1, activation='sigmoid'))
 
     model.compile(loss='binary_crossentropy',
@@ -88,7 +88,10 @@ def main():
     print(x_train_set)
     print(y_train_set)
 
-    model.fit(x_train_set, y_train_set, batch_size=10, epochs=10)
+    x = non_labels[split:size-offset]
+    y = y_train[split:]
+
+    model.fit(x_train_set, y_train_set, batch_size=5, epochs=20, validation_data=(x,y))
     # give the right test set here... labels might be off...
     score = model.evaluate(non_labels[split:size-offset], y_train[split:], batch_size=2)
     print(score)
