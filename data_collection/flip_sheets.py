@@ -8,8 +8,9 @@ import pandas as pd
 
 def main():
     if len(sys.argv) >= 2:
-        file_name = sys.argv[1]
-        flipfile(file_name)
+        filenames = sys.argv[1:]
+        for filename in filenames:
+            flipfile(filename)
 
     # else:
     #     files = ["Anoncoin.csv", "Argentum.csv", "BBQCoin.csv", "BetaCoin.csv", "BitBar.csv", "Bitcoin.csv",
@@ -28,7 +29,7 @@ def main():
 
 
 def flipfile(filename):
-    data = pd.DataFrame.from_csv(filename, index_col=None, header=0)
+    data = pd.read_csv(filename, index_col=None, header=0)
     data = data.iloc[::-1]
     data.to_csv(filename[:-4] + '_flipped.csv', index=False, header=True)
 
