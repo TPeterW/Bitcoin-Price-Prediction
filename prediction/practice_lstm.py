@@ -17,9 +17,25 @@ def main():
     size = 1350
     split = int(size * .6)
 
-    offset = 1
+    # When the split is .4 max accuracy is 52% on test set
+    # when split is .6 max accuracy is 59% on test set
+    # when split is .8 max accuracy is 62.83% on test set
 
-    filename = "/Users/HenrySwaffield/Documents/Middlebury Senior Year/fall/Senior Seminar/project/data/raw_data/btc-ohlc-coindesk.csv"
+    # original input type ^^
+
+    # new input type, in the custom feature, simply look if next day percent change is positive:
+    # split .8 Epoch 2/20
+    # 1080/1080 [==============================] - 2s - loss: 0.6941 - acc: 0.4843 - val_loss: 0.6880 - val_acc: 0.6407
+    # Epoch 3/20
+    # 1080/1080 [==============================] - 2s - loss: 0.6938 - acc: 0.5176 - val_loss: 0.6823 - val_acc: 0.6407
+    # Epoch 4/20
+    # 1080/1080 [==============================] - 2s - loss: 0.6891 - acc: 0.5352 - val_loss: 0.7120 - val_acc: 0.4259
+
+    # with split at .6 we get .57% accuracy on the new feature being tested
+
+    offset = 0
+
+    filename = "/Users/HenrySwaffield/Documents/Middlebury Senior Year/fall/Senior Seminar/project/data/raw_data/btc-ohlc-coindesk-custom.csv"
     file_data = pd.read_csv(filename, index_col=None, header=0, nrows=size)
     file_data = file_data[file_data.columns[1:]]
 
@@ -34,17 +50,17 @@ def main():
 
     # print(x_train)
 
-    y_train = matrix[:,3]
+    y_train = matrix[:,5]
 
     y_train = y_train[offset : ]
 
+    print(y_train)
+
+    # y_train = y_train = x_train
+
     # print(y_train)
 
-    y_train = y_train > x_train
-
-    # print(y_train)
-
-    non_labels = matrix[:, :3]
+    non_labels = matrix[:, :5]
 
     # x_min = np.min(non_labels)
     # range = np.range(non_labels)

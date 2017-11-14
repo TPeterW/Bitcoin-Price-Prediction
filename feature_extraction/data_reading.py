@@ -12,8 +12,10 @@ num_rows = 1369
 # should be 1369, lower because some coins have missing days...
 output_name = "consolidated_data_with_coins.csv"
 
-
+global filled_csvs
+# ^^ these don't have a date column, so must be handled differently
 def main():
+    global filled_csvs
     if len(sys.argv) >= 2:
         global output_name
         output_name = sys.argv[1]
@@ -34,8 +36,19 @@ def main():
 
     coin_csvs = [coin_path + s for s in coin_csvs]
 
+    # New Data!!
+
+    external_path = filepath+"Flipped_and_Filled_data/"
+
+    filled_csvs = ["classic-volatility-vix-daily_raw.csv", "daily_treasury_yield_curve_rate_raw.csv", "GLD_raw.csv", "Nasdaq^IXIC_raw.csv", "S_P500^GSPC_raw.csv"]
+
+    filled_csvs = [external_path + s for s in filled_csvs]
+
     filenames.extend(coin_csvs)
+    filenames.extend(filled_csvs)
     # also subject to change^ these are the datasets that I have cleaned.
+
+    filled_csvs = set(filled_csvs)
 
     write_csv(read_files(filenames))
 
@@ -43,6 +56,7 @@ def main():
 def read_files(data_files):
     global fieldnames
     global num_fields
+    global filled_csvs
 
     # Structures to hold the data as it is read in:
     dates = pd.read_csv(data_files[0], index_col=None, header=0, nrows=num_rows)
@@ -56,7 +70,9 @@ def read_files(data_files):
         # data_name = filename.split('/')[-1].split('.')[0]
         # TODO: Look out for data where there is randomly new data frequencies... sometimes it changes...
         file_data = pd.read_csv(filename, index_col=None, header=0, nrows=num_rows)
-        file_data = file_data[file_data.columns[1:]]
+
+        if not (filename in filled_csvs):
+            file_data = file_data[file_data.columns[1:]]
 
         file_matrix = pd.DataFrame.as_matrix(file_data)
 
