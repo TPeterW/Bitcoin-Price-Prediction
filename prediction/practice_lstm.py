@@ -17,7 +17,7 @@ def main():
     size = 1350
     split = int(size * .6)
 
-    offset = 2
+    offset = 1
 
     filename = "/Users/HenrySwaffield/Documents/Middlebury Senior Year/fall/Senior Seminar/project/data/raw_data/btc-ohlc-coindesk.csv"
     file_data = pd.read_csv(filename, index_col=None, header=0, nrows=size)
