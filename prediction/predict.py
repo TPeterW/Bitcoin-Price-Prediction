@@ -29,6 +29,9 @@ def main():
 def predict(features, labels, cutoff):
 	cutoff = int(len(features) * cutoff)
 
+	labels = labels[:len(features)].astype(int)
+	features = select_features(features, labels)
+
 	features_train = features.loc[:cutoff]
 	labels_train = labels.loc[:cutoff]
 	features_test = features.loc[cutoff:].reset_index(drop=True)
@@ -39,8 +42,7 @@ def predict(features, labels, cutoff):
 	# for i in range(cutoff, len(labels)):
 	# 	labels_test.append(1 if labels.loc[i] > labels.loc[i - 1] else 0)
 
-	# lr = LogisticRegression(C=1e5)
-	lr = Lasso(alpha=1e5)
+	lr = LogisticRegression(C=1e5)
 	lr.fit(features_train, labels_train)
 
 	predictions = lr.predict(features_test)
@@ -49,9 +51,6 @@ def predict(features, labels, cutoff):
 	# actual_prices = labels[cutoff - 1:-1].tolist()
 	# for i, val in enumerate(predictions):
 	# 	predictions[i] = 1 if val > actual_prices[i] else 0
-
-	print(labels_test)
-	return
 
 	print('Accuracy: %s' % accuracy_score(labels_test, predictions))
 	print('Precision: %s' % precision_score(labels_test, predictions))
