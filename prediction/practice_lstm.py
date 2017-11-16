@@ -14,7 +14,9 @@ from keras.layers import LSTM
 def main():
     print('hi')
 
-    size = 1350
+    # size = 1048576
+    size = 10485
+    # size = 200000
     split = int(size * .6)
 
     # When the split is .4 max accuracy is 52% on test set
@@ -35,12 +37,12 @@ def main():
 
     offset = 0
 
-    filename = "/Users/HenrySwaffield/Documents/Middlebury Senior Year/fall/Senior Seminar/project/data/raw_data/btc-ohlc-coindesk-custom.csv"
+    filename = "/Users/HenrySwaffield/Documents/Middlebury Senior Year/fall/Senior Seminar/project/data/raw_data/custom_minute_test1.csv"
+
     file_data = pd.read_csv(filename, index_col=None, header=0, nrows=size)
     file_data = file_data[file_data.columns[1:]]
 
     matrix = pd.DataFrame.as_matrix(file_data)
-
 
     x_train = matrix[:,0]
 
@@ -50,17 +52,23 @@ def main():
 
     # print(x_train)
 
-    y_train = matrix[:,5]
-
-    y_train = y_train[offset : ]
-
-    print(y_train)
+    # y_train = matrix[:,5]
+    #
+    # y_train = y_train[offset : ]
+    #
+    # print(y_train)
 
     # y_train = y_train = x_train
 
     # print(y_train)
 
-    non_labels = matrix[:, :5]
+    # non_labels = matrix[:, :5]
+
+    non_labels = matrix[:, 1:7]
+
+    y_train = matrix[:, 7:]
+
+    print('y_train', y_train)
 
     # x_min = np.min(non_labels)
     # range = np.range(non_labels)
@@ -69,13 +77,16 @@ def main():
     # non_labels = non_labels / range
     # non_labels = non_labels * .9999999
 
-    print(non_labels)
+    print('non_labels', non_labels)
 
-    max_features = 20000
+    max_features = 2000000
     model = Sequential()
     model.add(Embedding(max_features, output_dim=1))
     input_shape = (810,1)
     # model.add(LSTM(1, input_shape=input_shape, return_sequences=False))
+
+    # model.add(LSTM(128))
+
     model.add(LSTM(128))
 
     model.add(Dropout(0.5))
