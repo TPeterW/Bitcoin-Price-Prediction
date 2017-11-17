@@ -15,7 +15,7 @@ def main():
     print('hi')
 
     # size = 1048576
-    size = 10485
+    size = 104850
     # size = 200000
     split = int(size * .6)
 
@@ -29,6 +29,8 @@ def main():
     # original input type ^^
 
     # new input type, in the custom feature, simply look if next day percent change is positive:
+    # Maybe this was on the bad initial data...
+    # It's looking likt that was the case...
     # split .8 Epoch 2/20
     # 1080/1080 [==============================] - 2s - loss: 0.6941 - acc: 0.4843 - val_loss: 0.6880 - val_acc: 0.6407
     # Epoch 3/20
@@ -80,9 +82,31 @@ def main():
     # s - loss: 0.6550 - acc: 0.6122 - val_loss: 0.6630 - val_acc: 0.5961
 
 
+    # most up to date results:
+
+    # 62910 / 62910[ == == == == == == == == == == == == == == ==] - 314
+    # s - loss: 0.6580 - acc: 0.6116 - val_loss: 0.6679 - val_acc: 0.6070
+    # Epoch
+    # 2 / 5
+    # 62910 / 62910[ == == == == == == == == == == == == == == ==] - 318
+    # s - loss: 0.6547 - acc: 0.6116 - val_loss: 0.6733 - val_acc: 0.5493
+    # Epoch
+    # 3 / 5
+    # 62910 / 62910[ == == == == == == == == == == == == == == ==] - 321
+    # s - loss: 0.6510 - acc: 0.6215 - val_loss: 0.6570 - val_acc: 0.6150
+    # Epoch
+    # 4 / 5
+    # 62910 / 62910[ == == == == == == == == == == == == == == ==] - 322
+    # s - loss: 0.6120 - acc: 0.6764 - val_loss: 0.6454 - val_acc: 0.6372
+    # Epoch
+    # 5 / 5
+    # 62910 / 62910[ == == == == == == == == == == == == == == ==] - 323
+    # s - loss: 0.6108 - acc: 0.6830 - val_loss: 0.6439 - val_acc: 0.6359
+
+
     # represents the 10 minute later guesses...
     # Gets around 55% accuracy...
-    # y_train = matrix[:, 8:]
+    # y_train = matrix[:, 8:9]
 
     # 6291 / 6291[ == == == == == == == == == == == == == == ==] - 28
     # s - loss: 0.6885 - acc: 0.5498 - val_loss: 0.6898 - val_acc: 0.5510
@@ -109,6 +133,8 @@ def main():
     # average over the next 20 minutes being higher than current close...:
     # this does not work well, with smaller data set...
     # y_train = matrix[:, 9:10]
+    # y_train = matrix[:, 10:11]  # random labels
+    # y_train = matrix[:, 11:12]
 
     print('y_train', y_train)
 
@@ -121,6 +147,7 @@ def main():
 
     print('non_labels', non_labels)
 
+    # Need to consider how this number of features could affect overfitting...
     max_features = 2000000
     model = Sequential()
     model.add(Embedding(max_features, output_dim=1))
