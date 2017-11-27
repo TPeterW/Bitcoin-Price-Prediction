@@ -4,10 +4,11 @@
 import sys
 import pandas as pd
 
+from tqdm import tqdm
 from tsfresh import extract_features
 from tsfresh.utilities.dataframe_functions import impute
 
-days_before = 15
+minutes_before = 30
 
 def main():
 	if len(sys.argv) < 2:
@@ -16,7 +17,7 @@ def main():
 	filename = sys.argv[1]
 
 	raw_price_data = pd.read_csv(filename, index_col=None, header=0, thousands=',')
-	raw_price_data = raw_price_data[raw_price_data.columns[1:]]		# get rid of the date columns
+	# raw_price_data = raw_price_data[raw_price_data.columns[1:]]		# get rid of the date columns
 
 	timeseries, labels = convert(raw_price_data)
 
@@ -32,28 +33,31 @@ def main():
 def convert(raw_price_data, percentage=False):
 	price_data = raw_price_data.astype(float)
 
-	labels = price_data['btc-ohlc-coindesk-Close'][days_before - 1:]
-	labels.reset_index(drop=True, inplace=True)
+	print('Generating labels...')
+	close_prices = price_data['Close'].reset_index(drop=True)
+	open_prices = price_data['Open'].reset_index(drop=True)
 
-	for i in range(len(labels) - 1, 0, -1):
-		if labels[i] > labels[i - 1]:
+	labels = pd.Series([0] * len(price_data))
+	for i in tqdm(range(len(price_data) - 1, minutes_before - 1, -1)):
+		if close_prices[i] > open_prices[i]:
 			labels[i] = 1
 		else:
 			labels[i] = 0
-	
-	labels = labels[1:].reset_index(drop=True)
+	labels = labels.reset_index(drop=True)[minutes_before:]
 
+	print('Removing redundent columns...')
 	for col in price_data.columns:
-		if 'high' in col.lower() or 'low' in col.lower() or 'open' in col.lower():
+		if 'high' in col.lower() or 'low' in col.lower() or 'close' in col.lower():
 			price_data.drop(col, axis=1, inplace=True)
 
+	print('Converting into timeseries...')
 	raw = []
-	for i in range(30, len(price_data)):
-		for j in range(30):
-			row = price_data.loc[i - 30 + j].tolist()
-			raw.append([i - 30, j] + row)
+	for i in tqdm(range(minutes_before, len(price_data))):
+		for j in range(minutes_before):
+			row = price_data.loc[i - minutes_before + j].tolist()
+			raw.append([i - minutes_before, j] + row)
 
-	timeseries = pd.DataFrame(raw, index=None, columns=['id', 'time']+price_data.columns.tolist())
+	timeseries = pd.DataFrame(raw, index=None, columns=['id', 'time'] + price_data.columns.tolist())
 
 	return timeseries, labels
 
