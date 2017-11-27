@@ -15,7 +15,7 @@ def main():
     print('hi')
 
     # size = 1048576
-    size = 104850
+    size = 30485
     # size = 200000
     split = int(size * .6)
 
@@ -42,7 +42,9 @@ def main():
 
     offset = 0
 
-    filename = "/Users/HenrySwaffield/Documents/Middlebury Senior Year/fall/Senior Seminar/project/data/raw_data/custom_minute_test1.csv"
+    # filename = "/Users/HenrySwaffield/Documents/Middlebury Senior Year/fall/Senior Seminar/project/data/raw_data/coinbaseUSD_1-min_data_2014-12-01_to_2017-10-20.csv_test2.csv"
+    filename = "/Users/HenrySwaffield/Documents/Middlebury Senior Year/fall/Senior Seminar/project/data/raw_data/coinbaseUSD_1-min_data_test3.csv"
+
 
     file_data = pd.read_csv(filename, skiprows=useless_rows, index_col=None, header=0, nrows=size)
     file_data = file_data[file_data.columns[1:]]
@@ -69,10 +71,13 @@ def main():
 
     # non_labels = matrix[:, :5]
 
-    non_labels = matrix[:, 1:7]
+    # non_labels = matrix[:, 1:12]
+    non_labels = matrix[:, 1:14]
 
     # One minute later guesses, as labels:
-    y_train = matrix[:, 7:8]
+    # y_train = matrix[:, 12:13]
+    # This here is checking if the close of the next minute will be greater than the close of the current minute...
+    y_train = matrix[:, 14:15]
     # Getting about 61% accuracy... not that much better than before...
     # 62910 / 62910[ == == == == == == == == == == == == == == ==] - 301
     # s - loss: 0.6583 - acc: 0.6119 - val_loss: 0.6639 - val_acc: 0.5937
@@ -148,7 +153,7 @@ def main():
     print('non_labels', non_labels)
 
     # Need to consider how this number of features could affect overfitting...
-    max_features = 2000000
+    max_features = 400000
     model = Sequential()
     model.add(Embedding(max_features, output_dim=1))
     input_shape = (810,1)
@@ -188,7 +193,7 @@ def main():
     y = y_train[split:]
 
     # bigger batch sizes makes traning much faster.
-    model.fit(x_train_set, y_train_set, batch_size=5, epochs=5, validation_data=(x,y))
+    model.fit(x_train_set, y_train_set, batch_size=50, epochs=20, validation_data=(x,y))
     # give the right test set here... labels might be off...
     score = model.evaluate(non_labels[split:size-offset], y_train[split:], batch_size=2)
     print(score)

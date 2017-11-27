@@ -17,7 +17,7 @@ def main():
     print('hi')
 
     # size = 1048576
-    size = 10485
+    size = 104857
     # size = 200000
     split = int(size * .6)
 
