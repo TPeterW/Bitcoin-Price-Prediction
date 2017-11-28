@@ -12,9 +12,9 @@ from keras.layers import Embedding
 from keras.layers import LSTM
 
 # TODO: follow the guide....
+# helpful reference: https://machinelearningmastery.com/time-series-prediction-lstm-recurrent-neural-networks-python-keras/
 
 def main():
-    print('hi')
 
     # size = 1048576
     size = 104857
