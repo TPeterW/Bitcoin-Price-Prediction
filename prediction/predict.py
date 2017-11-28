@@ -56,12 +56,7 @@ def predict(features, labels, cutoff):
 	# 	predictions[i] = 1 if val > actual_prices[i] else 0
 
 	# TODO: get the original dataname to write a file, or atleast pass that to the simulation script
-	print(cutoff)
-
-	print(features_test)
-	print(predictions)
-	print(labels_test)
-
+	# Perhaps rework how this csv writing occurs, seperate csvs??
 	num_rows = len(predictions)
 	num_fields = 2
 	fieldnames = ['predicted', 'true']
