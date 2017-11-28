@@ -7,6 +7,7 @@ import itertools
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import csv
 
 from tsfresh import select_features
 
@@ -26,6 +27,8 @@ def main():
 
 	predict(features, labels, 0.9)
 
+# TODO: also take a raw data parameter, do this in one step with the feature extraction??
+# goal with that is to have direct access to the price data... could simply pass as a param...
 def predict(features, labels, cutoff):
 	cutoff = int(len(features) * cutoff)
 
@@ -51,6 +54,23 @@ def predict(features, labels, cutoff):
 	# actual_prices = labels[cutoff - 1:-1].tolist()
 	# for i, val in enumerate(predictions):
 	# 	predictions[i] = 1 if val > actual_prices[i] else 0
+
+	# TODO: get the original dataname to write a file, or atleast pass that to the simulation script
+	# Perhaps rework how this csv writing occurs, seperate csvs??
+	num_rows = len(predictions)
+	num_fields = 2
+	fieldnames = ['predicted', 'true']
+	with open("predictions.csv", 'w') as csvfile:
+		# w is write only, and it will overwrite an existing file (truncates to 0 length)
+		writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+		writer.writeheader()
+
+		for i in range(num_rows):
+			current_row = {}
+			current_row[fieldnames[0]] = predictions[i]
+			current_row[fieldnames[1]] = labels_test[i]
+			writer.writerow(current_row)
 
 	print('Accuracy: %s' % accuracy_score(labels_test, predictions))
 	print('Precision: %s' % precision_score(labels_test, predictions))
