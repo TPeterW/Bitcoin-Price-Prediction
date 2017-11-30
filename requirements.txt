@@ -3,3 +3,5 @@ pandas
 scikit-learn
 tsfresh
 matplotlib
+keras
+tqdm
