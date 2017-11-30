@@ -17,6 +17,9 @@ from sklearn.linear_model import LinearRegression, LogisticRegression, Lasso
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import accuracy_score, precision_score, recall_score, confusion_matrix
 
+
+# Will make a new script that is organized differently, to accomplish similar goals, within the context of the pipeline.
+
 def main():
 	if len(sys.argv) < 3:
 		print('Usage: ./predict.py features labels')
@@ -25,11 +28,19 @@ def main():
 	features = pd.read_csv(sys.argv[1], index_col=None, header=0)
 	labels = pd.read_csv(sys.argv[2], index_col=None, header=None, squeeze=True)
 
-	predict(features, labels, 0.9)
+	# to organize:
+	# these should be synchronized with extract_features.py
+	raw_data = pd.read_csv(sys.argv[3], index_col=None, header=0, squeeze=True)
+	# minutes before:
+	minutes_before = int(sys.argv[4])
+
+	predict(features, labels, raw_data, 0.9, minutes_before)
 
 # TODO: also take a raw data parameter, do this in one step with the feature extraction??
 # goal with that is to have direct access to the price data... could simply pass as a param...
-def predict(features, labels, cutoff):
+# This could be handled by one super process, so that it is all known...
+# This will occur in the new file. This here is essentially an outline of the new pipeline component. Will remove comments soon.
+def predict(features, labels, raw_data, cutoff, minutes_before):
 	cutoff = int(len(features) * cutoff)
 
 	labels = labels[:len(features)].astype(int)
@@ -57,9 +68,17 @@ def predict(features, labels, cutoff):
 
 	# TODO: get the original dataname to write a file, or atleast pass that to the simulation script
 	# Perhaps rework how this csv writing occurs, seperate csvs??
+
+
+	# rows - minutes_before from cutoff onwards shows the correct data...
+	# raw_data = raw_data[minutes_before + cutoff:]
+
+	raw_data_offset = minutes_before + cutoff
+
+
 	num_rows = len(predictions)
 	num_fields = 2
-	fieldnames = ['predicted', 'true']
+	fieldnames = ['predicted', 'true', 'change']
 	with open("predictions.csv", 'w') as csvfile:
 		# w is write only, and it will overwrite an existing file (truncates to 0 length)
 		writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
@@ -70,6 +89,7 @@ def predict(features, labels, cutoff):
 			current_row = {}
 			current_row[fieldnames[0]] = predictions[i]
 			current_row[fieldnames[1]] = labels_test[i]
+			current_row[fieldnames[2]] = raw_data['Change'][i + raw_data_offset]
 			writer.writerow(current_row)
 
 	print('Accuracy: %s' % accuracy_score(labels_test, predictions))
