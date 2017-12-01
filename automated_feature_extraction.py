@@ -14,35 +14,38 @@ from tsfresh.utilities.dataframe_functions import impute
 
 
 def main():
-
-    # TODO: move this into a function:
-    if len(sys.argv) < 2:
-        print('Usage: ./extract_features.py datafile.csv')
+    print('running ', len(sys.argv))
+    if len(sys.argv) < 3:
+        print('Usage: ./extract_features.py datafile.csv look_back_steps')
+        print("messup...")
         exit(1)
 
-    if not os.path.isfile('timeseries.csv') or not os.path.isfile('labels.csv'):
-        filename = sys.argv[1]
+    # This Checks if these file exist:
+    # if not os.path.isfile('timeseries.csv') or not os.path.isfile('labels.csv'):
+    #
 
-        raw_price_data = pd.read_csv(filename, index_col=None, header=0, thousands=',')
-        # raw_price_data = raw_price_data[raw_price_data.columns[1:]]		# get rid of the date columns
+    filename = sys.argv[1]
+    look_back_steps = int(sys.argv[2])
+    feature_extraction_process(filename, look_back_steps)
 
-        timeseries, labels = convert(raw_price_data)
+    # print("not sure....")
+    # filename_2 = '/Users/HenrySwaffield/Documents/Middlebury Senior Year/fall/Senior Seminar/project/workspace/Bitcoin-Price-Prediction/prediction/input_test1.csv'
+    # look_back_steps_2 = 30
 
-        timeseries.to_csv('timeseries.csv', index=False, header=True)
-        labels.to_csv('labels.csv', index=False, header=False)
-    else:
-        print('Intermediate files exist...')
-        timeseries = pd.read_csv('timeseries.csv', index_col=None, header=0)
-        labels = pd.read_csv('labels.csv', index_col=None, header=None, squeeze=True)
-
-    features = extract_features(timeseries, column_id='id', column_sort='time')
-    impute(features)
-    features.reset_index(drop=True, inplace=True)
-    labels.reset_index(drop=True, inplace=True)
-    features.to_csv('features_extracted.csv', sep=',', index=False, header=True)
-    labels.to_csv('labels.csv', sep=',', index=False, header=False)
-
-    print('Done!')
+    # not entirely sure how to handle this.
+    # might be unnecessary
+    # else:
+    #     print('Intermediate files exist...')
+    #     timeseries = pd.read_csv('timeseries.csv', index_col=None, header=0)
+    #     labels = pd.read_csv('labels.csv', index_col=None, header=None, squeeze=True)
+    #
+    #     features = extract_features(timeseries, column_id='id', column_sort='time')
+    #     impute(features)
+    #     features.reset_index(drop=True, inplace=True)
+    #     labels.reset_index(drop=True, inplace=True)
+    #     # unique labeling here?
+    #     features.to_csv('features_extracted.csv', sep=',', index=False, header=True)
+    #     labels.to_csv('labels.csv', sep=',', index=False, header=False)
 
 
 def convert(raw_price_data, look_back_steps):
@@ -77,10 +80,36 @@ def convert(raw_price_data, look_back_steps):
     return timeseries, labels
 
 # Needs FileName:
-# Minutes_before:
+# look_back:
+def feature_extraction_process(filename, look_back_steps):
+    get_file = os.path.basename(filename)
+    base_filename = get_file.split('.')[0]
+    raw_price_data = pd.read_csv(filename, index_col=None, header=0, thousands=',')
+    # raw_price_data = raw_price_data[raw_price_data.columns[1:]]		# get rid of the date columns
+
+    timeseries, labels = convert(raw_price_data, look_back_steps)
+
+    timeseries.to_csv('timeseries.csv', index=False, header=True)
+    labels.to_csv('labels.csv', index=False, header=False)
 
 
-def feature_extraction_process(data_file_name, look_back_steps):
+
+    features = extract_features(timeseries, column_id='id', column_sort='time')
+    impute(features)
+    features.reset_index(drop=True, inplace=True)
+    labels.reset_index(drop=True, inplace=True)
+    # TODO:add a unique id here... perhaps the filename?? - why is that not happening?
+
+    descriptive_name = str(base_filename + '_features_extracted.csv')
+
+    print(base_filename)
+    print('does this even happen???')
+    print(descriptive_name)
+
+    features.to_csv(descriptive_name, sep=',', index=False, header=True)
+    labels.to_csv('labels.csv', sep=',', index=False, header=False)
+
+    print('Done!')
 
 if __name__ == '__main__':
     main()
