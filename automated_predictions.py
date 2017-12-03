@@ -2,14 +2,10 @@
 # -*- coding: utf-8 -*-
 
 import sys
-import locale
 import itertools
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-import csv
-
-from tsfresh import select_features
 
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
@@ -19,27 +15,31 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, confu
 
 import automated_simulation_pipeline
 
-# TODO: clean this main:
+
 def main():
     if len(sys.argv) < 3:
-        print('Usage: ./predict.py features labels')
+        print('Usage: ./automated_predictions.py features labels raw_data_name')
         exit(1)
 
     features = pd.read_csv(sys.argv[1], index_col=None, header=0)
     labels = pd.read_csv(sys.argv[2], index_col=None, header=None, squeeze=True)
-
     raw_data_name = sys.argv[3]
-    minutes_before = int(sys.argv[4])
 
-    # predict(features, labels, 0.9, minutes_before, raw_data_name)
+    features_train, labels_train, features_test, labels_test = automated_simulation_pipeline.read_feature_extraction_and_label_output(features, labels)
+
+    descriptive_output_name = automated_simulation_pipeline.input_file_to_output_name(raw_data_name)
+
+    train_and_test_process(features_train, labels_train, features_test, labels_test, descriptive_output_name)
 
 
-# Split this into train and predict?
+# Takes in the training set of features and labels, and returns the trained model:
 def train(features_train, labels_train):
     model = LogisticRegression(C=1e5)
     model.fit(features_train, labels_train)
     return model
 
+# Takes in a trained model, and evaluates it with the test set:
+# It also writes the predictions, to be used by downstream simulation processes
 def test_model(trained_model, features_test, labels_test, descriptive_output_name):
     predictions = trained_model.predict(features_test)
     # score = trained_model.score(features_test, labels_test)
@@ -56,13 +56,12 @@ def test_model(trained_model, features_test, labels_test, descriptive_output_nam
     # plot_confusion_matrix(cnf_matrix, normalize=True, classes=[0, 1], title='Nomalized Confusion Matrix')
     # plt.show()
 
-
+# trains and tests a model with the provided train and test sets, writes predictions with the given output name
 def train_and_test_process(features_train, labels_train, features_test, labels_test, descriptive_output_name):
     model = train(features_train, labels_train)
-
     test_model(model, features_test, labels_test, descriptive_output_name)
 
-
+# prints the confusion matrix, when enabled:
 def plot_confusion_matrix(cm, classes,
                           normalize=False,
                           title='Confusion matrix',

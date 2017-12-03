@@ -10,46 +10,21 @@ from tqdm import tqdm
 from tsfresh import extract_features
 from tsfresh.utilities.dataframe_functions import impute
 
-# To Make This A Param
-# minutes_before = 30
-
-
 def main():
     print('running ', len(sys.argv))
     if len(sys.argv) < 3:
-        print('Usage: ./extract_features.py datafile.csv look_back_steps')
-        print("messup...")
+        print('Usage: ./automated_feature_extraction.py datafile.csv look_back_steps')
         exit(1)
-
-    # todo: have a seperate way to check this...
-    # This Checks if these file exist:
-    # consider getting the descriptive name...
-    # if not os.path.isfile('timeseries.csv') or not os.path.isfile('labels.csv'):
-
 
     filename = sys.argv[1]
     look_back_steps = int(sys.argv[2])
-    feature_extraction_process(filename, look_back_steps)
 
-    # print("not sure....")
-    # filename_2 = '/Users/HenrySwaffield/Documents/Middlebury Senior Year/fall/Senior Seminar/project/workspace/Bitcoin-Price-Prediction/prediction/input_test1.csv'
-    # look_back_steps_2 = 30
+    file_stem = input_file_to_output_name(filename)
 
-    # not entirely sure how to handle this.
-    # might be unnecessary
-    # else:
-    #     print('Intermediate files exist...')
-    #     timeseries = pd.read_csv('timeseries.csv', index_col=None, header=0)
-    #     labels = pd.read_csv('labels.csv', index_col=None, header=None, squeeze=True)
-    #
-    #     features = extract_features(timeseries, column_id='id', column_sort='time')
-    #     impute(features)
-    #     features.reset_index(drop=True, inplace=True)
-    #     labels.reset_index(drop=True, inplace=True)
-    #     # unique labeling here?
-    #     features.to_csv('features_extracted.csv', sep=',', index=False, header=True)
-    #     labels.to_csv('labels.csv', sep=',', index=False, header=False)
-
+    if not os.path.isfile(file_stem + '_timeseries.csv') or not os.path.isfile(file_stem + '_labels.csv'):
+        feature_extraction_process(filename, look_back_steps)
+    else:
+        print("Intermediate Files Already Exist")
 
 def convert(raw_price_data, look_back_steps):
     price_data = raw_price_data.astype(float)
@@ -83,41 +58,23 @@ def convert(raw_price_data, look_back_steps):
     return timeseries, labels
 
 
-# def input_file_to_output_name(filename):
-#     get_base_file = os.path.basename(filename)
-#     base_filename = get_base_file.split('.')[0]
-#     # base_filename = '/pipeline_data/' + base_filename
-#     return base_filename
-
-# To be Called by the pipeline
+# Called by the pipeline
 def feature_extraction_process(filename, look_back_steps):
     base_filename = input_file_to_output_name(filename)
     raw_price_data = pd.read_csv(filename, index_col=None, header=0, thousands=',')
-    # raw_price_data = raw_price_data[raw_price_data.columns[1:]]		# get rid of the date columns
 
     timeseries, labels = convert(raw_price_data, look_back_steps)
-
-    # timeseries.to_csv('timeseries.csv', index=False, header=True)
-    # labels.to_csv('labels.csv', index=False, header=False)
-
-
 
     features = extract_features(timeseries, column_id='id', column_sort='time')
     impute(features)
     features.reset_index(drop=True, inplace=True)
     labels.reset_index(drop=True, inplace=True)
-    # TODO:add a unique id here... perhaps the filename?? - why is that not happening?
-
-    descriptive_features_output_name = base_filename + '_features_extracted.csv'
-
-
-    descriptive_labels_output_name = base_filename + '_labels.csv'
 
     timeseries.to_csv(base_filename + '_timeseries.csv', index=False, header=True)
-    features.to_csv(descriptive_features_output_name, sep=',', index=False, header=True)
-    labels.to_csv(descriptive_labels_output_name, sep=',', index=False, header=False)
+    features.to_csv(base_filename + '_features_extracted.csv', sep=',', index=False, header=True)
+    labels.to_csv(base_filename + '_labels.csv', sep=',', index=False, header=False)
 
-    print('Done!')
+    print('Output Labeling, and Feature Extraction Completed')
 
 if __name__ == '__main__':
     main()
