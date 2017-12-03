@@ -1,6 +1,8 @@
 import sys
 import os.path
 from tsfresh import select_features
+import pandas as pd
+
 
 import automated_feature_extraction
 import automated_predictions
@@ -29,7 +31,12 @@ global train_test_ratio
 # This is how you line up the raw_data and the predictions ... +/- 1
 # raw_data_offset = minutes_before + cutoff
 
-# manage descriptive name here...
+
+def read_feature_extraction_and_label_output(features, labels):
+    features = pd.read_csv(features, index_col=None, header=0)
+    labels = pd.read_csv(labels, index_col=None, header=None, squeeze=True)
+
+    return features, labels
 
 
 # This takes output from the feature extraction and labeling components:
@@ -49,7 +56,7 @@ def split_train_and_test(features, labels):
 
     return features_train, labels_train, features_test, labels_test
 
-
+# manage descriptive name here...
 def input_file_to_output_name(filename):
     get_base_file = os.path.basename(filename)
     base_filename = get_base_file.split('.')[0]
@@ -69,7 +76,15 @@ def main():
     steps_look_back = int(sys.argv[3])
 
     # Can check here to see if this stage is necessary:
-    automated_feature_extraction.feature_extraction_process(raw_data_name, steps_look_back)
+    # automated_feature_extraction.feature_extraction_process(raw_data_name, steps_look_back)
+
+    file_stem = input_file_to_output_name(raw_data_name)
+
+    features, labels = read_feature_extraction_and_label_output(file_stem + '_features_extracted.csv', file_stem + '_labels.csv')
+
+    features_train, labels_train, features_test, labels_test = split_train_and_test(features, labels)
+
+    automated_predictions.train_and_test_process(features_train, labels_train, features_test, labels_test, file_stem)
 
 
 
