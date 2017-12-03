@@ -4,6 +4,7 @@
 import sys
 import os.path
 import pandas as pd
+from automated_simulation_pipeline import input_file_to_output_name
 
 from tqdm import tqdm
 from tsfresh import extract_features
@@ -20,9 +21,11 @@ def main():
         print("messup...")
         exit(1)
 
+    # todo: have a seperate way to check this...
     # This Checks if these file exist:
+    # consider getting the descriptive name...
     # if not os.path.isfile('timeseries.csv') or not os.path.isfile('labels.csv'):
-    #
+
 
     filename = sys.argv[1]
     look_back_steps = int(sys.argv[2])
@@ -79,11 +82,16 @@ def convert(raw_price_data, look_back_steps):
 
     return timeseries, labels
 
-# Needs FileName:
-# look_back:
+
+# def input_file_to_output_name(filename):
+#     get_base_file = os.path.basename(filename)
+#     base_filename = get_base_file.split('.')[0]
+#     # base_filename = '/pipeline_data/' + base_filename
+#     return base_filename
+
+# To be Called by the pipeline
 def feature_extraction_process(filename, look_back_steps):
-    get_file = os.path.basename(filename)
-    base_filename = get_file.split('.')[0]
+    base_filename = input_file_to_output_name(filename)
     raw_price_data = pd.read_csv(filename, index_col=None, header=0, thousands=',')
     # raw_price_data = raw_price_data[raw_price_data.columns[1:]]		# get rid of the date columns
 
@@ -100,14 +108,14 @@ def feature_extraction_process(filename, look_back_steps):
     labels.reset_index(drop=True, inplace=True)
     # TODO:add a unique id here... perhaps the filename?? - why is that not happening?
 
-    descriptive_name = str(base_filename + '_features_extracted.csv')
+    descriptive_features_output_name = base_filename + '_features_extracted.csv'
 
-    print(base_filename)
-    print('does this even happen???')
-    print(descriptive_name)
 
-    features.to_csv(descriptive_name, sep=',', index=False, header=True)
-    labels.to_csv('labels.csv', sep=',', index=False, header=False)
+    descriptive_labels_output_name = base_filename + '_labels.csv'
+
+
+    features.to_csv(descriptive_features_output_name, sep=',', index=False, header=True)
+    labels.to_csv(descriptive_labels_output_name, sep=',', index=False, header=False)
 
     print('Done!')
 
