@@ -19,7 +19,7 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, confu
 
 import automated_simulation_pipeline
 
-
+# TODO: clean this main:
 def main():
     if len(sys.argv) < 3:
         print('Usage: ./predict.py features labels')
@@ -36,52 +36,19 @@ def main():
 
 # Split this into train and predict?
 def train(features_train, labels_train):
-    # cutoff = int(len(features) * cutoff)
-
-    # labels = labels[:len(features)].astype(int)
-    # features = select_features(features, labels)
-
-    # TODO: move this outside of this file, to the pipeline level:
-    # features_train = features.loc[:cutoff]
-    # labels_train = labels.loc[:cutoff]
-    # features_test = features.loc[cutoff:].reset_index(drop=True)
-    # labels_test = labels.loc[cutoff:].reset_index(drop=True)
-
-
-
     model = LogisticRegression(C=1e5)
     model.fit(features_train, labels_train)
-
-    # predictions = model.predict(features_test)
-    # score = model.score(features_test, labels_test)
-
     return model
-
-    #
-    #
-    #
-    # np.savetxt(input_file_to_output_name(raw_data_name) + '_predictions.csv', predictions, fmt='%i', delimiter=',')
-    #
-    # print('Accuracy: %s' % accuracy_score(labels_test, predictions))
-    # print('Precision: %s' % precision_score(labels_test, predictions))
-    # print('Recall: %s' % recall_score(labels_test, predictions))
-
-    # Does not make sense to show this in this part of the code:
-    # cnf_matrix = confusion_matrix(labels_test, predictions, [0, 1])
-    # plt.figure()
-    # plot_confusion_matrix(cnf_matrix, normalize=True, classes=[0, 1], title='Nomalized Confusion Matrix')
-    # plt.show()
 
 def test_model(trained_model, features_test, labels_test, descriptive_output_name):
     predictions = trained_model.predict(features_test)
-    score = trained_model.score(features_test, labels_test)
+    # score = trained_model.score(features_test, labels_test)
 
     np.savetxt(descriptive_output_name + '_predictions.csv', predictions, fmt='%i', delimiter=',')
 
     print('Accuracy: %s' % accuracy_score(labels_test, predictions))
     print('Precision: %s' % precision_score(labels_test, predictions))
     print('Recall: %s' % recall_score(labels_test, predictions))
-    print('Score: %s' % score)
 
     # Does not make sense to show this in this part of the code:
     # cnf_matrix = confusion_matrix(labels_test, predictions, [0, 1])

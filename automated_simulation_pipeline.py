@@ -71,19 +71,24 @@ def main():
 
     raw_data_name = sys.argv[1]
 
+    file_stem = input_file_to_output_name(raw_data_name)
+
     train_test_ratio = float(sys.argv[2])
 
     steps_look_back = int(sys.argv[3])
 
     # Can check here to see if this stage is necessary:
-    # automated_feature_extraction.feature_extraction_process(raw_data_name, steps_look_back)
 
-    file_stem = input_file_to_output_name(raw_data_name)
+    # Checking whether feature extraction work has been performed, with the provided input file
+    # This will prevent that expensive procedure from occurring, if the pipeline already has the data it would compute
+    if not os.path.isfile(file_stem + '_timeseries.csv') or not os.path.isfile(file_stem + '_labels.csv'):
+        automated_feature_extraction.feature_extraction_process(raw_data_name, steps_look_back)
 
+    # Reading in the output from the labeling and feature extraction processes:
     features, labels = read_feature_extraction_and_label_output(file_stem + '_features_extracted.csv', file_stem + '_labels.csv')
-
     features_train, labels_train, features_test, labels_test = split_train_and_test(features, labels)
 
+    # Performing the model training and evaluation:
     automated_predictions.train_and_test_process(features_train, labels_train, features_test, labels_test, file_stem)
 
 

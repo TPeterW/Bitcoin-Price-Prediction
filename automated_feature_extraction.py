@@ -97,8 +97,8 @@ def feature_extraction_process(filename, look_back_steps):
 
     timeseries, labels = convert(raw_price_data, look_back_steps)
 
-    timeseries.to_csv('timeseries.csv', index=False, header=True)
-    labels.to_csv('labels.csv', index=False, header=False)
+    # timeseries.to_csv('timeseries.csv', index=False, header=True)
+    # labels.to_csv('labels.csv', index=False, header=False)
 
 
 
@@ -113,7 +113,7 @@ def feature_extraction_process(filename, look_back_steps):
 
     descriptive_labels_output_name = base_filename + '_labels.csv'
 
-
+    timeseries.to_csv(base_filename + '_timeseries.csv', index=False, header=True)
     features.to_csv(descriptive_features_output_name, sep=',', index=False, header=True)
     labels.to_csv(descriptive_labels_output_name, sep=',', index=False, header=False)
 
