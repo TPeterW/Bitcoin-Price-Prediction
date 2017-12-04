@@ -7,28 +7,25 @@ import itertools
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-import csv
-
 from tsfresh import select_features
-
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.linear_model import LinearRegression, LogisticRegression, Lasso
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import accuracy_score, precision_score, recall_score, confusion_matrix
 
+
 def main():
 	if len(sys.argv) < 3:
 		print('Usage: ./predict.py features labels')
 		exit(1)
-	
+
 	features = pd.read_csv(sys.argv[1], index_col=None, header=0)
 	labels = pd.read_csv(sys.argv[2], index_col=None, header=None, squeeze=True)
 
 	predict(features, labels, 0.9)
 
-# TODO: also take a raw data parameter, do this in one step with the feature extraction??
-# goal with that is to have direct access to the price data... could simply pass as a param...
+
 def predict(features, labels, cutoff):
 	cutoff = int(len(features) * cutoff)
 
@@ -55,22 +52,8 @@ def predict(features, labels, cutoff):
 	# for i, val in enumerate(predictions):
 	# 	predictions[i] = 1 if val > actual_prices[i] else 0
 
-	# TODO: get the original dataname to write a file, or atleast pass that to the simulation script
-	# Perhaps rework how this csv writing occurs, seperate csvs??
-	num_rows = len(predictions)
-	num_fields = 2
-	fieldnames = ['predicted', 'true']
-	with open("predictions.csv", 'w') as csvfile:
-		# w is write only, and it will overwrite an existing file (truncates to 0 length)
-		writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-
-		writer.writeheader()
-
-		for i in range(num_rows):
-			current_row = {}
-			current_row[fieldnames[0]] = predictions[i]
-			current_row[fieldnames[1]] = labels_test[i]
-			writer.writerow(current_row)
+	# Writing the predictions to an output file:
+	np.savetxt('predictions.csv', predictions, fmt='%i', delimiter=',')
 
 	print('Accuracy: %s' % accuracy_score(labels_test, predictions))
 	print('Precision: %s' % precision_score(labels_test, predictions))

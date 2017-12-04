@@ -18,5 +18,15 @@ def main():
 
 # in the pipeline, which could have numerous components / params, differing labels could correspond to different strategies.
 
+
+
+# what this file needs to know:
+# original price data source
+# where the cutoff is between train and test, and what the lookback window is...
+# the predictions
+
+
+# THE PIPELINE is happening here...
+
 if __name__ == '__main__':
 	main()
