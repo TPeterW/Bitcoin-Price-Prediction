@@ -3,6 +3,7 @@
 
 import sys
 import os.path
+import numpy as np
 import pandas as pd
 
 from extract_features import convert
@@ -11,6 +12,7 @@ from tqdm import tqdm
 from tsfresh import extract_features
 from sklearn.linear_model import Lasso
 from sklearn.feature_selection import RFE
+from tsfresh.utilities.dataframe_functions import impute
 
 def main():
 	if len(sys.argv) < 2:
@@ -39,6 +41,7 @@ def main():
 	sample_windows.reset_index(drop=True, inplace=True)
 
 	sample_features = extract_features(sample_windows, column_id='id', column_sort='time')
+	impute(sample_features)
 
 	best_features = rfe(sample_features, sample_labels, 8)
 	print(best_features)
