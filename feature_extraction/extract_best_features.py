@@ -30,7 +30,8 @@ def main():
 		labels.to_csv('labels.csv', sep=',', index=False, header=False)
 	else:
 		print('Intermediate files exist...')
-		timeseries = pd.read_csv('timeseries.csv', index_col=None, header=0)
+		# timeseries = pd.read_csv('timeseries.csv', index_col=None, header=0)
+		timeseries = pd.read_csv('short_timeseries.csv', index_col=None, header=0)
 	
 	features = extract_best_features(timeseries, samples_per_window=LOOKBACK_MINUTES)
 	impute(features)
@@ -45,39 +46,36 @@ def extract_best_features(timeseries, samples_per_window):
 	start = 0
 	end = samples_per_window
 
-	cols = timeseries.columns[2:]
-	for col in cols:
-		col_feature1 = []
-		col_feature2 = []
-		col_feature3 = []
-		col_feature4 = []
-		col_feature5 = []
-		col_feature6 = []
-		col_feature7 = []
-		col_feature8 = []
-		for i in tqdm(range(len(timeseries) // samples_per_window)):
-			column = timeseries[start:end][col].as_matrix().tolist()
+	col_feature1 = []
+	col_feature2 = []
+	col_feature3 = []
+	col_feature4 = []
+	col_feature5 = []
+	col_feature6 = []
+	col_feature7 = []
+	col_feature8 = []
+	for i in tqdm(range(len(timeseries) // samples_per_window)):
+		window = timeseries[start:end]['Open'].as_matrix().tolist()
+		col_feature1.append(list(feature_calculators.fft_coefficient(window, [{'coeff': 10, 'attr': 'imag'}]))[0][1])
+		col_feature2.append(list(feature_calculators.fft_coefficient(window, [{'coeff': 14, 'attr': 'imag'}]))[0][1])
+		col_feature3.append(list(feature_calculators.fft_coefficient(window, [{'coeff': 2, 'attr': 'abs'}]))[0][1])
+		col_feature4.append(list(feature_calculators.fft_coefficient(window, [{'coeff': 3, 'attr': 'real'}]))[0][1])
+		col_feature5.append(list(feature_calculators.fft_coefficient(window, [{'coeff': 4, 'attr': 'real'}]))[0][1])
+		col_feature6.append(list(feature_calculators.fft_coefficient(window, [{'coeff': 6, 'attr': 'imag'}]))[0][1])
+		col_feature7.append(list(feature_calculators.fft_coefficient(window, [{'coeff': 7, 'attr': 'imag'}]))[0][1])
+		col_feature8.append(list(feature_calculators.fft_coefficient(window, [{'coeff': 8, 'attr': 'real'}]))[0][1])
+		
+		start = end
+		end += samples_per_window
 
-			col_feature1.append(list(feature_calculators.fft_coefficient(column, [{'coeff': 10, 'attr': 'imag'}]))[0][1])
-			col_feature2.append(list(feature_calculators.fft_coefficient(column, [{'coeff': 14, 'attr': 'imag'}]))[0][1])
-			col_feature3.append(list(feature_calculators.fft_coefficient(column, [{'coeff': 2, 'attr': 'abs'}]))[0][1])
-			col_feature4.append(list(feature_calculators.fft_coefficient(column, [{'coeff': 3, 'attr': 'real'}]))[0][1])
-			col_feature5.append(list(feature_calculators.fft_coefficient(column, [{'coeff': 4, 'attr': 'real'}]))[0][1])
-			col_feature6.append(list(feature_calculators.fft_coefficient(column, [{'coeff': 6, 'attr': 'imag'}]))[0][1])
-			col_feature7.append(list(feature_calculators.fft_coefficient(column, [{'coeff': 7, 'attr': 'imag'}]))[0][1])
-			col_feature8.append(list(feature_calculators.fft_coefficient(column, [{'coeff': 8, 'attr': 'real'}]))[0][1])
-			
-			start = end
-			end += samples_per_window
-
-		extracted_features[col + '_feature1'] = col_feature1
-		extracted_features[col + '_feature2'] = col_feature2
-		extracted_features[col + '_feature3'] = col_feature3
-		extracted_features[col + '_feature4'] = col_feature4
-		extracted_features[col + '_feature5'] = col_feature5
-		extracted_features[col + '_feature6'] = col_feature6
-		extracted_features[col + '_feature7'] = col_feature7
-		extracted_features[col + '_feature8'] = col_feature8
+	extracted_features['Open_feature1'] = col_feature1
+	extracted_features['Open_feature2'] = col_feature2
+	extracted_features['Open_feature3'] = col_feature3
+	extracted_features['Open_feature4'] = col_feature4
+	extracted_features['Open_feature5'] = col_feature5
+	extracted_features['Open_feature6'] = col_feature6
+	extracted_features['Open_feature7'] = col_feature7
+	extracted_features['Open_feature8'] = col_feature8
 
 	return extracted_features
 
