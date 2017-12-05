@@ -30,8 +30,8 @@ def main():
 		labels.to_csv('labels.csv', sep=',', index=False, header=False)
 	else:
 		print('Intermediate files exist...')
-		# timeseries = pd.read_csv('timeseries.csv', index_col=None, header=0)
-		timeseries = pd.read_csv('short_timeseries.csv', index_col=None, header=0)
+		timeseries = pd.read_csv('timeseries.csv', index_col=None, header=0)
+		# timeseries = pd.read_csv('short_timeseries.csv', index_col=None, header=0)
 	
 	features = extract_best_features(timeseries, samples_per_window=LOOKBACK_MINUTES)
 	impute(features)
