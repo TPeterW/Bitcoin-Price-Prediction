@@ -6,6 +6,8 @@ import os.path
 import configparser
 import pandas as pd
 
+from tqdm import tqdm
+from tsfresh.utilities.dataframe_functions import impute
 from tsfresh.feature_extraction import feature_calculators
 
 def main():
@@ -20,7 +22,20 @@ def main():
 
 		raw_price_data = pd.read_csv(filename, index_col=None, header=0, thousands=',')
 
-		# timeseries, labels = 
+		timeseries, labels = convert(raw_price_data)
+
+		timeseries.to_csv('timeseries.csv', index=False, header=True)
+
+		labels.reset_index(drop=True, inplace=True)
+		labels.to_csv('labels.csv', sep=',', index=False, header=False)
+	else:
+		print('Intermediate files exist...')
+		timeseries = pd.read_csv('timeseries.csv', index_col=None, header=0)
+	
+	features = extract_best_features(timeseries, samples_per_window=LOOKBACK_MINUTES)
+	impute(features)
+	features.reset_index(drop=True, inplace=True)
+	features.to_csv('features_extracted.csv', sep=',', index=False, header=True)
 
 def extract_best_features(timeseries, samples_per_window):
 	'''
@@ -30,43 +45,50 @@ def extract_best_features(timeseries, samples_per_window):
 	start = 0
 	end = samples_per_window
 
-	kurtosis = []
-	count_above_mean = []
-	absolute_sum_of_changes = []
-	skewness = []
-	number_peaks_1 = []
-	number_peaks_2 = []
-	number_peaks_3 = []
-	longest_strike_below_mean = []
-	last_location_of_maximum = []
+	cols = timeseries.columns[2:]
+	for col in cols:
+		col_feature1 = []
+		col_feature2 = []
+		col_feature3 = []
+		col_feature4 = []
+		col_feature5 = []
+		col_feature6 = []
+		col_feature7 = []
+		col_feature8 = []
+		for i in tqdm(range(len(timeseries) // samples_per_window)):
+			column = timeseries[start:end][col].as_matrix().tolist()
 
-	for i in tqdm(range(len(timeseries) // samples_per_window)):
-		window = timeseries[start:end]['contact'].as_matrix().tolist()
+			col_feature1.append(list(feature_calculators.fft_coefficient(column, [{'coeff': 10, 'attr': 'imag'}]))[0][1])
+			col_feature2.append(list(feature_calculators.fft_coefficient(column, [{'coeff': 14, 'attr': 'imag'}]))[0][1])
+			col_feature3.append(list(feature_calculators.fft_coefficient(column, [{'coeff': 2, 'attr': 'abs'}]))[0][1])
+			col_feature4.append(list(feature_calculators.fft_coefficient(column, [{'coeff': 3, 'attr': 'real'}]))[0][1])
+			col_feature5.append(list(feature_calculators.fft_coefficient(column, [{'coeff': 4, 'attr': 'real'}]))[0][1])
+			col_feature6.append(list(feature_calculators.fft_coefficient(column, [{'coeff': 6, 'attr': 'imag'}]))[0][1])
+			col_feature7.append(list(feature_calculators.fft_coefficient(column, [{'coeff': 7, 'attr': 'imag'}]))[0][1])
+			col_feature8.append(list(feature_calculators.fft_coefficient(column, [{'coeff': 8, 'attr': 'real'}]))[0][1])
+			
+			start = end
+			end += samples_per_window
 
-		kurtosis.append(feature_calculators.kurtosis(window))
-		count_above_mean.append(feature_calculators.count_above_mean(window))
-		absolute_sum_of_changes.append(feature_calculators.absolute_sum_of_changes(window))
-		skewness.append(feature_calculators.skewness(window))
-		number_peaks_1.append(feature_calculators.number_peaks(window, n=1))
-		number_peaks_2.append(feature_calculators.number_peaks(window, n=3))
-		number_peaks_3.append(feature_calculators.number_peaks(window, n=5))
-		longest_strike_below_mean.append(feature_calculators.longest_strike_below_mean(window))
-		last_location_of_maximum.append(feature_calculators.last_location_of_maximum(window))
-
-		start = end
-		end += samples_per_window
-
-	extracted_features['kurtosis'] = kurtosis
-	extracted_features['count_above_mean'] = count_above_mean
-	extracted_features['absolute_sum_of_changes'] = absolute_sum_of_changes
-	extracted_features['skewness'] = skewness
-	extracted_features['number_peaks__n_1'] = number_peaks_1
-	extracted_features['number_peaks__n_3'] = number_peaks_2
-	extracted_features['number_peaks__n_5'] = number_peaks_3
-	extracted_features['longest_strike_below_mean'] = longest_strike_below_mean
-	extracted_features['last_location_of_maximum'] = last_location_of_maximum
+		extracted_features[col + '_feature1'] = col_feature1
+		extracted_features[col + '_feature2'] = col_feature2
+		extracted_features[col + '_feature3'] = col_feature3
+		extracted_features[col + '_feature4'] = col_feature4
+		extracted_features[col + '_feature5'] = col_feature5
+		extracted_features[col + '_feature6'] = col_feature6
+		extracted_features[col + '_feature7'] = col_feature7
+		extracted_features[col + '_feature8'] = col_feature8
 
 	return extracted_features
+
+# 'Volume_(Currency)__fft_coefficient__coeff_10__attr_"imag"'
+# 'Volume_(Currency)__fft_coefficient__coeff_14__attr_"imag"'
+# 'Volume_(Currency)__fft_coefficient__coeff_2__attr_"abs"'
+# 'Volume_(Currency)__fft_coefficient__coeff_3__attr_"real"'
+# 'Volume_(Currency)__fft_coefficient__coeff_4__attr_"real"'
+# 'Volume_(Currency)__fft_coefficient__coeff_6__attr_"imag"'
+# 'Volume_(Currency)__fft_coefficient__coeff_7__attr_"imag"'
+# 'Volume_(Currency)__fft_coefficient__coeff_8__attr_"real"'
 
 def convert(raw_price_data, percentage=False):
 	price_data = raw_price_data.astype(float)
