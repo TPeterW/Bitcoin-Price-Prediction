@@ -8,6 +8,7 @@ import automated_predictions
 
 # value we have been using:
 steps_look_back = 30
+# TODO: connect to config file
 
 global train_test_ratio
 
@@ -45,16 +46,39 @@ def split_train_and_test(features, labels):
 
     return features_train, labels_train, features_test, labels_test
 
-# manage descriptive name here...
+# Parses the Input filename to produce a useful filestem.
 def input_file_to_output_name(filename):
     get_base_file = os.path.basename(filename)
     base_filename = get_base_file.split('.')[0]
     # base_filename = '/pipeline_data/' + base_filename
     return base_filename
 
+# Runs The whole pipeline:
+def simulation_pipeline_process(raw_data_name, steps_look_back):
 
-# maybe more params to specify pipeline options:
-# TODO: make a seperate pipeline function
+    file_stem = input_file_to_output_name(raw_data_name)
+
+
+    # Can check here to see if this stage is necessary:
+
+    # Checking whether feature extraction work has been performed, with the provided input file
+    # This will prevent that expensive procedure from occurring, if the pipeline already has the data it would compute
+    if not os.path.isfile(file_stem + '_timeseries.csv') or not os.path.isfile(file_stem + '_labels.csv'):
+        automated_feature_extraction.feature_extraction_process(raw_data_name, steps_look_back)
+        print("Feature Extraction, Label Application, And Feature Selection Completed")
+    else:
+        print("Feature Extraction, Label Application, And Feature Selection Previously Completed")
+
+    # Reading in the output from the labeling and feature extraction processes:
+    features, labels = read_feature_extraction_and_label_output(file_stem + '_features_extracted.csv',
+                                                                file_stem + '_labels.csv')
+    features_train, labels_train, features_test, labels_test = split_train_and_test(features, labels)
+
+    # Performing the model training and evaluation:
+    automated_predictions.train_and_test_process(features_train, labels_train, features_test, labels_test, file_stem)
+
+
+# Calls Pipeline Process
 def main():
     if len(sys.argv) < 4:
         print('Usage: ./automated_simulation_pipeline.py raw_data train_test_ratio steps_look_back')
@@ -63,26 +87,10 @@ def main():
     global train_test_ratio
 
     raw_data_name = sys.argv[1]
-
-    file_stem = input_file_to_output_name(raw_data_name)
-
     train_test_ratio = float(sys.argv[2])
-
     steps_look_back = int(sys.argv[3])
 
-    # Can check here to see if this stage is necessary:
-
-    # Checking whether feature extraction work has been performed, with the provided input file
-    # This will prevent that expensive procedure from occurring, if the pipeline already has the data it would compute
-    if not os.path.isfile(file_stem + '_timeseries.csv') or not os.path.isfile(file_stem + '_labels.csv'):
-        automated_feature_extraction.feature_extraction_process(raw_data_name, steps_look_back)
-
-    # Reading in the output from the labeling and feature extraction processes:
-    features, labels = read_feature_extraction_and_label_output(file_stem + '_features_extracted.csv', file_stem + '_labels.csv')
-    features_train, labels_train, features_test, labels_test = split_train_and_test(features, labels)
-
-    # Performing the model training and evaluation:
-    automated_predictions.train_and_test_process(features_train, labels_train, features_test, labels_test, file_stem)
+    simulation_pipeline_process(raw_data_name, steps_look_back)
 
 
 if __name__ == '__main__':
