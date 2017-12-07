@@ -22,7 +22,6 @@ from coinutils import input_file_to_output_name
 
 
 # maybe more params to specify pipeline options:
-# TODO: make a seperate pipeline function
 def main():
 	if len(sys.argv) < 2:
 		print('Usage: ./simulation_pipeline.py raw_data')
