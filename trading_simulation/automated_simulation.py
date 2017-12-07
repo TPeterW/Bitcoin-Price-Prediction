@@ -24,8 +24,8 @@ def test_model(trained_model, features_test, raw_price_data):
 	spent = 0
 	coins = 0
 	for index, pred in enumerate(predictions):
-		# if not index % 60 * 24 == 0:
-		# 	continue
+		# if not index % (60 * 24) == 0:
+			# continue
 		open_price = raw_price_data.iloc[index][0]
 		close_price = raw_price_data.iloc[index][1]
 		if pred == 0:
