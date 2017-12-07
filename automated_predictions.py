@@ -13,8 +13,6 @@ from sklearn.linear_model import LinearRegression, LogisticRegression, Lasso
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import accuracy_score, precision_score, recall_score, confusion_matrix
 
-import automated_simulation_pipeline
-
 
 def main():
     if len(sys.argv) < 3:

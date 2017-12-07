@@ -4,7 +4,7 @@
 import sys
 import os.path
 import pandas as pd
-from automated_simulation_pipeline import input_file_to_output_name
+from coinutils import input_file_to_output_name
 
 from tqdm import tqdm
 from tsfresh import extract_features
