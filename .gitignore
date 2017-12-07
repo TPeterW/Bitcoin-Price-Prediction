@@ -8,6 +8,7 @@ data/
 *.DS_Store
 *.csv
 *.txt
+*.xlsx
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
