@@ -42,8 +42,11 @@ def main():
 	features, labels = read_feature_extraction_and_label_output(file_stem + '_features_extracted.csv', file_stem + '_labels.csv')
 	features_train, labels_train, features_test, labels_test = split_train_and_test(features, labels)
 
+	# Extract open and close data from input
+	raw_data = pd.read_csv(raw_data_name, index_col=0, header=0).reset_index(drop=True)
+
 	# Performing the model training and simulation:
-	automated_simulation.train_and_simulate_process(features_train, labels_train, features_test)
+	automated_simulation.train_and_simulate_process(features_train, labels_train, features_test, raw_data)
 
 # reads the output from the labeling and feature extraction processes:
 def read_feature_extraction_and_label_output(features, labels):
