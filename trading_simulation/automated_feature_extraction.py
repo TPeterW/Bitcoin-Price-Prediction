@@ -1,30 +1,27 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 import sys
 import os.path
 import pandas as pd
-from automated_simulation_pipeline import input_file_to_output_name
+from coinutils import input_file_to_output_name
 
 from tqdm import tqdm
 from tsfresh import extract_features
 from tsfresh.utilities.dataframe_functions import impute
 
-def main():
-    print('running ', len(sys.argv))
-    if len(sys.argv) < 3:
-        print('Usage: ./automated_feature_extraction.py datafile.csv look_back_steps')
-        exit(1)
+# def main():
+#     print('running ', len(sys.argv))
+#     if len(sys.argv) < 3:
+#         print('Usage: ./automated_feature_extraction.py datafile.csv look_back_steps')
+#         exit(1)
 
-    filename = sys.argv[1]
-    look_back_steps = int(sys.argv[2])
+#     filename = sys.argv[1]
+#     look_back_steps = int(sys.argv[2])
 
-    file_stem = input_file_to_output_name(filename)
+#     file_stem = input_file_to_output_name(filename)
 
-    if not os.path.isfile(file_stem + '_timeseries.csv') or not os.path.isfile(file_stem + '_labels.csv'):
-        feature_extraction_process(filename, look_back_steps)
-    else:
-        print("Intermediate Files Already Exist")
+#     if not os.path.isfile(file_stem + '_timeseries.csv') or not os.path.isfile(file_stem + '_labels.csv'):
+#         feature_extraction_process(filename, look_back_steps)
+#     else:
+#         print("Intermediate Files Already Exist")
 
 def convert(raw_price_data, look_back_steps):
     price_data = raw_price_data.astype(float)
@@ -76,5 +73,5 @@ def feature_extraction_process(filename, look_back_steps):
 
     print('Output Labeling, and Feature Extraction Completed')
 
-if __name__ == '__main__':
-    main()
+# if __name__ == '__main__':
+#     main()
