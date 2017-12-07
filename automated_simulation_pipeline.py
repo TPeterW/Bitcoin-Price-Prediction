@@ -77,7 +77,6 @@ def simulation_pipeline_process(raw_data_name, steps_look_back, model_choice):
 
     # Performing the model training and evaluation:
 
-    #TODO: toggle the model:
     if model_choice:
         pipeline_lstm(features_train, labels_train, features_test, labels_test)
     else:
@@ -95,7 +94,7 @@ def main():
     raw_data_name = sys.argv[1]
     train_test_ratio = float(sys.argv[2])
     steps_look_back = int(sys.argv[3])
-    model_choice = bool(sys.argv[4])
+    model_choice = bool(int(sys.argv[4]))
 
     # param here to toggle the model used:
     simulation_pipeline_process(raw_data_name, steps_look_back, model_choice)

@@ -22,7 +22,7 @@ def pipeline_lstm(train_frame, labels_frame, cv_features_frame, cv_labels_frame)
     from keras.models import Sequential
     from keras.layers import Dense, Dropout
     from keras.layers import Embedding
-    from keras.layers import LSTM
+    from keras.layers import LSTM, ConvLSTM2D
 
     # print(train_frame)
     # print(labels_frame)
@@ -45,7 +45,8 @@ def pipeline_lstm(train_frame, labels_frame, cv_features_frame, cv_labels_frame)
     model = Sequential()
     # input_shape of LSTM first param is time steps...?
     model.add(LSTM(128, input_shape=train.shape[1:]))
-    model.add(Dense(10))
+    model.add(Dropout(0.2))
+    model.add(Dense(32))
     model.add(Dense(1, activation='sigmoid'))
     model.compile(loss='binary_crossentropy',
                   optimizer='rmsprop',
@@ -58,10 +59,13 @@ def pipeline_lstm(train_frame, labels_frame, cv_features_frame, cv_labels_frame)
     print(score)
 
 
+# A commandline runnable version:
 def main():
     if len(sys.argv) < 3:
         print('Usage: ./automated_lstm_predictions.py extracted_features labels')
         exit(1)
+
+    #Simply Would Need To Parse And Call The Above Process
 
 
 
