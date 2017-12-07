@@ -14,11 +14,6 @@ def run_correlations(filename):
     btc_c = data['Close']
     btc_change = (btc_c - btc_o) / btc_o
 
-    ltc_o = data['Litecoin-Open']
-    ltc_c = data['Litecoin-Close']
-
-    ltc_change = (ltc_c - ltc_o) / ltc_o
-
     for coin in alt_coins:
         coin_open = data[coin+'-Open']
         coin_close = data[coin + '-Close']
@@ -33,9 +28,6 @@ def run_correlations(filename):
         print("Testing Correlation Between Bitcoin Historical Data and (same day %change) " + coin + ": ")
         print("R (same day)= " + str(coefficient_same_day))
         print("R (next day)= " + str(coefficient_next_day_btc))
-
-
-
 
 
 def main():
