@@ -10,23 +10,6 @@ from sklearn.linear_model import LinearRegression, LogisticRegression, Lasso
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import accuracy_score, precision_score, recall_score, confusion_matrix
 
-
-# def main():
-#     if len(sys.argv) < 3:
-#         print('Usage: ./automated_predictions.py features labels raw_data_name')
-#         exit(1)
-
-#     features = pd.read_csv(sys.argv[1], index_col=None, header=0)
-#     labels = pd.read_csv(sys.argv[2], index_col=None, header=None, squeeze=True)
-#     raw_data_name = sys.argv[3]
-
-#     features_train, labels_train, features_test, labels_test = automated_simulation_pipeline.read_feature_extraction_and_label_output(features, labels)
-
-#     descriptive_output_name = automated_simulation_pipeline.input_file_to_output_name(raw_data_name)
-
-#     train_and_test_process(features_train, labels_train, features_test, labels_test, descriptive_output_name)
-
-
 # Takes in the training set of features and labels, and returns the trained model:
 def train(features_train, labels_train):
     model = LogisticRegression(C=1e5)
@@ -52,7 +35,7 @@ def test_model(trained_model, features_test, labels_test, descriptive_output_nam
     # plt.show()
 
 # trains and tests a model with the provided train and test sets, writes predictions with the given output name
-def train_and_test_process(features_train, labels_train, features_test, labels_test, descriptive_output_name):
+def train_and_simulate_process(features_train, labels_train, features_test, labels_test, descriptive_output_name):
     model = train(features_train, labels_train)
     test_model(model, features_test, labels_test, descriptive_output_name)
 
@@ -90,7 +73,3 @@ def plot_confusion_matrix(cm, classes,
     plt.tight_layout()
     plt.ylabel('True label')
     plt.xlabel('Predicted label')
-
-
-# if __name__ == '__main__':
-#     main()

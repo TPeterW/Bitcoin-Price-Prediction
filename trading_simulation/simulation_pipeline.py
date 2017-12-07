@@ -7,7 +7,7 @@ import configparser
 import pandas as pd
 
 import automated_feature_extraction
-import automated_predictions
+import automated_simulation
 
 from tsfresh import select_features
 from coinutils import input_file_to_output_name
@@ -32,21 +32,18 @@ def main():
 	raw_data_name = sys.argv[1]
 
 	file_stem = input_file_to_output_name(raw_data_name)
-	print(file_stem)
-
-	return
 
 	# Checking whether feature extraction work has been performed, with the provided input file
 	# This will prevent that expensive procedure from occurring, if the pipeline already has the data it would compute
-	if not os.path.isfile(file_stem + '_timeseries.csv') or not os.path.isfile(file_stem + '_labels.csv'):
-		automated_feature_extraction.feature_extraction_process(raw_data_name, steps_look_back)
+	if not os.path.isfile(file_stem + '_features_extracted.csv') or not os.path.isfile(file_stem + '_labels.csv'):
+		automated_feature_extraction.feature_extraction_process(raw_data_name, LOOKBACK_MINUTES)
 
 	# Reading in the output from the labeling and feature extraction processes:
 	features, labels = read_feature_extraction_and_label_output(file_stem + '_features_extracted.csv', file_stem + '_labels.csv')
 	features_train, labels_train, features_test, labels_test = split_train_and_test(features, labels)
 
-	# Performing the model training and evaluation:
-	automated_predictions.train_and_test_process(features_train, labels_train, features_test, labels_test, file_stem)
+	# Performing the model training and simulation:
+	automated_simulation.train_and_simulate_process(features_train, labels_train, features_test)
 
 # reads the output from the labeling and feature extraction processes:
 def read_feature_extraction_and_label_output(features, labels):
@@ -59,9 +56,7 @@ def read_feature_extraction_and_label_output(features, labels):
 # This takes output from the feature extraction and labeling components:
 # Reads csv... returns more convenient data_frames
 def split_train_and_test(features, labels):
-	global train_test_ratio
-
-	split_point = int(len(features) * train_test_ratio)
+	split_point = int(len(features) * TRAIN_TEST_RATIO)
 
 	labels = labels[:len(features)].astype(int)
 	features = select_features(features, labels)
@@ -75,7 +70,7 @@ def split_train_and_test(features, labels):
 
 def load_params():
 	config = configparser.ConfigParser()
-	config.read('config.ini')
+	config.read('../config.ini')
 
 	global LOOKBACK_MINUTES
 	LOOKBACK_MINUTES = int(config['Classifiers']['lookback'])
