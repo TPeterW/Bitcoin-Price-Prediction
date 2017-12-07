@@ -5,6 +5,7 @@ import pandas as pd
 
 import automated_feature_extraction
 import automated_predictions
+from automated_lstm_predictions import pipeline_lstm
 
 # value we have been using:
 steps_look_back = 30
@@ -54,7 +55,7 @@ def input_file_to_output_name(filename):
     return base_filename
 
 # Runs The whole pipeline:
-def simulation_pipeline_process(raw_data_name, steps_look_back):
+def simulation_pipeline_process(raw_data_name, steps_look_back, model_choice):
 
     file_stem = input_file_to_output_name(raw_data_name)
 
@@ -75,13 +76,18 @@ def simulation_pipeline_process(raw_data_name, steps_look_back):
     features_train, labels_train, features_test, labels_test = split_train_and_test(features, labels)
 
     # Performing the model training and evaluation:
-    automated_predictions.train_and_test_process(features_train, labels_train, features_test, labels_test, file_stem)
+
+    #TODO: toggle the model:
+    if model_choice:
+        pipeline_lstm(features_train, labels_train, features_test, labels_test)
+    else:
+        automated_predictions.train_and_test_process(features_train, labels_train, features_test, labels_test, file_stem)
 
 
 # Calls Pipeline Process
 def main():
-    if len(sys.argv) < 4:
-        print('Usage: ./automated_simulation_pipeline.py raw_data train_test_ratio steps_look_back')
+    if len(sys.argv) < 5:
+        print('Usage: ./automated_simulation_pipeline.py raw_data train_test_ratio steps_look_back model_choice')
         exit(1)
 
     global train_test_ratio
@@ -89,8 +95,10 @@ def main():
     raw_data_name = sys.argv[1]
     train_test_ratio = float(sys.argv[2])
     steps_look_back = int(sys.argv[3])
+    model_choice = bool(sys.argv[4])
 
-    simulation_pipeline_process(raw_data_name, steps_look_back)
+    # param here to toggle the model used:
+    simulation_pipeline_process(raw_data_name, steps_look_back, model_choice)
 
 
 if __name__ == '__main__':
