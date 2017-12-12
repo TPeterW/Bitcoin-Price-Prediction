@@ -11,11 +11,7 @@ from keras.layers import Dense, Dropout
 from keras.layers import Embedding
 from keras.layers import LSTM
 
-# TODO: follow the guide....
-
 def main():
-    print('hi')
-
     # size = 1048576
     size = 104857
     # size = 200000
@@ -59,7 +55,7 @@ def main():
 
     model = Sequential()
     # input_shape of LSTM first param is time steps...?
-    model.add(LSTM(128, input_shape=train.shape[1:]))
+    model.add(LSTM(64, input_shape=train.shape[1:]))
     model.add(Dropout(0.2))
     model.add(Dense(32))
     model.add(Dense(1, activation='sigmoid'))
@@ -76,9 +72,10 @@ def main():
 
 
     # bigger batch sizes makes traning much faster.
-    model.fit(x_train_set, y_train_set, batch_size=20, epochs=5, validation_data=(x,y))
+    model.fit(x_train_set, y_train_set, batch_size=20, epochs=10, validation_data=(x,y))
     # give the right test set here... labels might be off...
-    score = model.evaluate(non_labels[split:size-offset], y[split:], batch_size=2)
+    print('[loss, accuracy]:')
+    score = model.evaluate(x, y, batch_size=200)
     print(score)
 
 if __name__ == '__main__':

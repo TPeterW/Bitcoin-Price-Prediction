@@ -41,7 +41,7 @@ def pipeline_lstm(train_frame, labels_frame, cv_features_frame, cv_labels_frame)
                   optimizer='rmsprop',
                   metrics=['accuracy'])
 
-    model.fit(train, labels, batch_size=10, epochs=100, validation_data=(cv_features,cv_labels))
+    model.fit(train, labels, batch_size=20, epochs=5, validation_data=(cv_features,cv_labels))
     print('LSTM Training Complete')
     score = model.evaluate(cv_features,cv_labels)
 
