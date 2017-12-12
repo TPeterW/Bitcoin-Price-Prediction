@@ -26,26 +26,36 @@ def pipeline_lstm(train_frame, labels_frame, cv_features_frame, cv_labels_frame)
     print(labels.shape)
 
     # Don't expect there to be timesteps... because features were extracted into timeseries, seperately...
-    # Could explore how to build timesteps into this here...
 
     train = np.expand_dims(train, axis=1)
     cv_features = np.expand_dims(cv_features, axis=1)
 
     model = Sequential()
-    # input_shape of LSTM first param is time steps...?
-    model.add(LSTM(128, input_shape=train.shape[1:]))
+    # input_shape of LSTM first param is time steps...
+    # model.add(LSTM(128, input_shape=train.shape[1:]))
+    # model.add(Dropout(0.2))
+    # model.add(Dense(32))
+
+    model.add(LSTM(64, input_shape=train.shape[1:], return_sequences=True))
     model.add(Dropout(0.2))
+    model.add(LSTM(64, return_sequences=True))
+    model.add(Dropout(0.2))
+    model.add(LSTM(64))
     model.add(Dense(32))
+
     model.add(Dense(1, activation='sigmoid'))
     model.compile(loss='binary_crossentropy',
                   optimizer='rmsprop',
                   metrics=['accuracy'])
-
-    model.fit(train, labels, batch_size=20, epochs=5, validation_data=(cv_features,cv_labels))
+    batch_size = 20
+    model.fit(train, labels, batch_size=batch_size, epochs=5, validation_data=(cv_features,cv_labels))
     print('LSTM Training Complete')
     score = model.evaluate(cv_features,cv_labels)
-
     print(score)
+
+    #writing predictions
+    predictions = model.predict(cv_features, batch_size=batch_size)
+    np.savetxt(descriptive_output_name + '_predictions.csv', predictions, fmt='%i', delimiter=',')
 
 
 # Should import this from automated_simulation_pipeline:

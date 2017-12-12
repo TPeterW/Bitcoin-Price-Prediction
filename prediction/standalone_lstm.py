@@ -4,22 +4,19 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-import math
-import matplotlib.pyplot as plt
 from keras.models import Sequential
 from keras.layers import Dense, Dropout
-from keras.layers import Embedding
 from keras.layers import LSTM
 
 def main():
-    # size = 1048576
+
     size = 104857
-    # size = 200000
-    split = int(size * .6)
+    # size = 630520
+    split = int(size * .8)
 
     offset = 0
 
-    # Coinbase data set is sparse before row 418053... there are no changes, so it is useles...
+    # Coinbase data set is sparse before row 418053
     useless_rows = 418053
 
     filename = "/Users/HenrySwaffield/Documents/Middlebury Senior Year/fall/Senior Seminar/project/data/raw_data/coinbaseUSD_1-min_data_test3.csv"
@@ -55,8 +52,9 @@ def main():
 
     model = Sequential()
     # input_shape of LSTM first param is time steps...?
-    model.add(LSTM(64, input_shape=train.shape[1:]))
-    model.add(Dropout(0.2))
+    model.add(LSTM(16, input_shape=train.shape[1:], return_sequences=True))
+    model.add(LSTM(16, return_sequences=True))
+    model.add(LSTM(16))
     model.add(Dense(32))
     model.add(Dense(1, activation='sigmoid'))
     model.compile(loss='binary_crossentropy',
@@ -72,8 +70,7 @@ def main():
 
 
     # bigger batch sizes makes traning much faster.
-    model.fit(x_train_set, y_train_set, batch_size=20, epochs=10, validation_data=(x,y))
-    # give the right test set here... labels might be off...
+    model.fit(x_train_set, y_train_set, batch_size=100, epochs=5, validation_data=(x,y))
     print('[loss, accuracy]:')
     score = model.evaluate(x, y, batch_size=200)
     print(score)
