@@ -1,3 +1,9 @@
+from numpy.random import seed
+seed(2)
+from tensorflow import set_random_seed
+set_random_seed(3)
+# For making reproducible results ^, partially works.
+
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
@@ -38,30 +44,40 @@ def main():
     model = Sequential()
     model.add(BatchNormalization(input_shape=train.shape[1:]))
     # input_shape of LSTM first param is time steps...?
-    model.add(LSTM(128, return_sequences=True))
+    model.add(LSTM(115,  input_shape=train.shape[1:], return_sequences=True))
     model.add(Dropout(.2))
-    model.add(LSTM(64, return_sequences=True))
-    model.add(LSTM(32))
-    model.add(Dense(16))
+    model.add(LSTM(115, return_sequences=True))
+    model.add(Dropout(.2))
+    model.add(LSTM(115))
     model.add(Dense(1, activation='sigmoid'))
-    model.compile(loss='binary_crossentropy',
-                  optimizer='rmsprop',
-                  metrics=['accuracy'])
-
-
     model.compile(loss='binary_crossentropy',
                   optimizer='rmsprop',
                   metrics=['accuracy'])
 
     print(model.summary())
 
-
-
     # bigger batch sizes makes traning much faster.
-    model.fit(x_train_set, y_train_set, batch_size=5, epochs=20, validation_data=(x,y))
+    history = model.fit(x_train_set, y_train_set, batch_size=5, epochs=20, validation_data=(x,y))
     print('[loss, accuracy]:')
     score = model.evaluate(x, y, batch_size=200)
     print(score)
+
+    # for plotting learning metrics curves:
+    plt.plot(history.history['acc'])
+    plt.plot(history.history['val_acc'])
+    plt.title('model accuracy')
+    plt.ylabel('accuracy')
+    plt.xlabel('epoch')
+    plt.legend(['train', 'test'], loc='upper left')
+    plt.show()
+    # summarize history for loss
+    plt.plot(history.history['loss'])
+    plt.plot(history.history['val_loss'])
+    plt.title('model loss')
+    plt.ylabel('loss')
+    plt.xlabel('epoch')
+    plt.legend(['train', 'test'], loc='upper left')
+    plt.show()
 
 if __name__ == '__main__':
 	main()
