@@ -13,31 +13,49 @@ import pandas as pd
 from keras.models import Sequential
 from keras.layers import Dense, Dropout
 from keras.layers import LSTM, BatchNormalization
+import sys
+
+def assemble_lookback_window(dataset, look_back=1):
+    data = []
+    for i in range(len(dataset)-look_back-1):
+	    a = dataset[i:(i+look_back)]
+	    data.append(a)
+    return np.array(data)
 
 def main():
+    # User toggles the lookback setting:
+    use_look_back = False
+    timesteps = 0
+    if len(sys.argv) > 1:
+        use_look_back = True
+        timesteps = int(sys.argv[1])
+
 
     # 4 years of daily data:
     size = 1369
     split = int(size * .8)
 
+    # Example datafile
     filename = '/Users/HenrySwaffield/Documents/Middlebury Senior Year/fall/Senior Seminar/project/workspace/Bitcoin-Price-Prediction/data_collection/consolidated_data_with_coins_newest.csv'
 
     file_data = pd.read_csv(filename, index_col=None, header=0, nrows=size)
     matrix = pd.DataFrame.as_matrix(file_data)
 
-    # There are 114 input fields:
-    non_labels = matrix[:, 0:114]
+    # There are 114 input fields, in example data file:
+    num_features = 114
+    non_labels = matrix[:, 0:num_features]
     # Label Fields:
     labels = matrix[:, 114:115]
 
-    # trying offsets...
-    train = np.expand_dims(non_labels, axis=1)
+    # rearranging train data:
+    train = assemble_lookback_window(non_labels, look_back=timesteps) if use_look_back else np.expand_dims(non_labels, axis=1)
 
-    x_train_set = train[:split]
-    y_train_set = labels[0:split]
+    x_train_set = train[timesteps:split]
+    y_train_set = labels[timesteps:split]
 
-    x = train[split:size]
-    y = labels[split:]
+    x = train[split:]
+    end_of_labels = size - timesteps - 1 if use_look_back else size - timesteps
+    y = labels[split:end_of_labels]
 
 
     # Adding dropout here increased accuracy a lot:
@@ -57,7 +75,7 @@ def main():
     print(model.summary())
 
     # bigger batch sizes makes traning much faster.
-    history = model.fit(x_train_set, y_train_set, batch_size=5, epochs=20, validation_data=(x,y))
+    history = model.fit(x_train_set, y_train_set, batch_size=100, epochs=20, validation_data=(x,y))
     print('[loss, accuracy]:')
     score = model.evaluate(x, y, batch_size=200)
     print(score)
