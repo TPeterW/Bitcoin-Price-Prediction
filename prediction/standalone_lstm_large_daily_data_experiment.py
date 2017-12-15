@@ -62,11 +62,12 @@ def main():
     model = Sequential()
     model.add(BatchNormalization(input_shape=train.shape[1:]))
     # input_shape of LSTM first param is time steps...?
-    model.add(LSTM(115,  input_shape=train.shape[1:], return_sequences=True))
+    feature_units = 1 + num_features
+    model.add(LSTM(feature_units,  input_shape=train.shape[1:], return_sequences=True))
     model.add(Dropout(.2))
-    model.add(LSTM(115, return_sequences=True))
+    model.add(LSTM(feature_units, return_sequences=True))
     model.add(Dropout(.2))
-    model.add(LSTM(115))
+    model.add(LSTM(feature_units))
     model.add(Dense(1, activation='sigmoid'))
     model.compile(loss='binary_crossentropy',
                   optimizer='rmsprop',
@@ -75,7 +76,7 @@ def main():
     print(model.summary())
 
     # bigger batch sizes makes traning much faster.
-    history = model.fit(x_train_set, y_train_set, batch_size=100, epochs=20, validation_data=(x,y))
+    history = model.fit(x_train_set, y_train_set, batch_size=50, epochs=20, validation_data=(x,y))
     print('[loss, accuracy]:')
     score = model.evaluate(x, y, batch_size=200)
     print(score)
